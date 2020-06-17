@@ -1,6 +1,7 @@
 
+--------------------------------------------------- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
 
-/ Logic Of Loading: Check Weight until becoming less than 1200 KG
+// Logic Of Loading: Check Weight until becoming less than 1200 KG
 
 SEQUENCE Check Weight USING Weight
     
@@ -35,6 +36,8 @@ SEQUENCE Position-Elevator-By-Default USING Time AND Days AND NbrFloors
 
 END SEQUENCE
 
+
+---------------------------------------------------- SEQUENCES OF ESSENTIALS REQUIREMENTS -------------------------------------------------
 
 // Logic To Move Elevator To Distination
 
@@ -89,7 +92,6 @@ SEQUENCE Open-Doors USING Time AND Barrier
 END SEQUENCE
 
 
-
 // Logic To Move Elevator To Current-Floor
 
 SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
@@ -141,9 +143,10 @@ END SEQUENCE
 
 //  ------------------------------------------------------  MAIN PROGRAM  ---------------------------------------------------------
 
+
 // When User push the Call-Button.
 
-SEQUENCE Request-Elevator USING Current-Floor AND Direction 
+SEQUENCE Request-Elevator     USING       Current-Floor AND Direction AND Elevator-Position AND Waiting-Time AND Barrier
     
     CALL Find-Best-Elevator               WITH  CurrentFloor AND Direction And Elevator-Position  
     CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
@@ -154,7 +157,7 @@ END SEQUENCE
 
 // When User push the Request-Floor-Button From inside Elevator
 
-SEQUENCE Request-Floor USING Demand-Floor                    
+SEQUENCE Request-Floor        USING       Demand-Floor AND  Current-Floor AND Waiting-Time AND Barrier AND  Weight              
     
     CALL Check Weight                     WITH  Weight
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
@@ -166,6 +169,7 @@ END SEQUENCE
 
 // --------------------------------------------------  TESTING PROGRAM  -----------------------------------------------------------
 
+
 // Scenario 1:
-xxx
+
 
