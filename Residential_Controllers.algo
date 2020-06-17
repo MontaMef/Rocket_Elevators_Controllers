@@ -36,7 +36,7 @@ SEQUENCE Position-Elevator-By-Default USING Time AND Days AND NbrFloors
 END SEQUENCE
 
 
-// Logic To Move Elevator To Current-Floor
+// Logic To Move Elevator To Distination
 
 SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
 
