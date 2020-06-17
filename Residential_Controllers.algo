@@ -36,11 +36,65 @@ SEQUENCE Position-Elevator-By-Default USING Time AND Days AND NbrFloors
 END SEQUENCE
 
 
+// Logic To Move Elevator To Current-Floor
+
+SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
+
+    Initial Elevator-Postion = Current-Floor
+    While ((Demand-Floor - Elevator-Postion) > 0) DO
+        Move Up
+        REPEAT
+            Incriment Floor
+        UNTIL Demand-Floor =Elevator-Position
+    END WHILE
+
+    While ((Demand-Floor - Elevator-Position) < 0) DO
+        Move Down
+        REPEAT
+            Dicriment Floor
+        UNTIL Demand-Floor =Elevator-Position
+    END WHILE
+
+END SEQUENCE
+
+
+// Logic To Close Doors
+
+SEQUENCE Close-Doors USING Time AND Barrier
+
+    Variable Waiting-Time = 0 sec
+    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
+        SET Doors-Situation = Opened
+        Waiting-Time = Waiting-Time + 1 sec
+    END WHILE
+
+    SET Doors-Situation = Closed
+
+END SEQUENCE
+
+
+// Logic To Open Doors
+
+SEQUENCE Open-Doors USING Time AND Barrier
+
+    SET Doors-Situstion = Opened
+    Variable Waiting-Time = 0 sec
+    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
+        SET Doors-Situation = Opened
+        Waiting-Time = Waiting-Time + 1 sec
+    END WHILE
+
+    SET Doors-Situation = Closed
+
+END SEQUENCE
+
+
 
 // Logic To Move Elevator To Current-Floor
 
-SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Elevator-Position
+SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
 
+    Initial Elevator-Postion = Best-Elevator-Position
     While ((Current-Floor - Elevator-Position) > 0) DO
         Move Up
         REPEAT
@@ -91,23 +145,21 @@ END SEQUENCE
 
 SEQUENCE Request-Elevator USING Current-Floor AND Direction 
     
-    CALL Find-Best-Elevator   WITH CurrentFloor AND Direction And Elevator-Position  
-    CALL Move-Elevator-To-CurrentFloor        WITH Current-Floor AND Elevator-Position  
-    CALL Elevator-Brakes                                
-    CALL Open-Doors  
+    CALL Find-Best-Elevator               WITH  CurrentFloor AND Direction And Elevator-Position  
+    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
 
 
 // When User push the Request-Floor-Button From inside Elevator
 
-SEQUENCE Request-Floor USING Request-Floor                    
+SEQUENCE Request-Floor USING Demand-Floor                    
     
-    CALL Check Weight   With  Weight
-    CALL Close-Doors                                         
-    CALL Move-Elevator-To-Destination
-    CALL Stop-Elevator
-    CALL Open-Doors
+    CALL Check Weight                     WITH  Weight
+    CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
+    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
 
