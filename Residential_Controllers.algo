@@ -1,9 +1,23 @@
 
 --------------------------------------------------- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
+------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
+
+// Logic To Operate Situation While Alarm is Detecting Problems Or No 
+
+SEQUENCE Check-Alarm-Status  USING Alarm-Status
+    
+    Variable Elevator-Status = ON SERVICE
+    WHILE( Alarm-Status Detect Problems )DO
+        Set Elevator-Status = Outside Service
+        CALL Open-Door
+    END WHILE
+
+END SEQUENCE
+
 
 // Logic Of Loading: Check Weight until becoming less than 1200 KG
 
-SEQUENCE Check Weight USING Weight
+SEQUENCE Check-Weight USING Weight
     
     WHILE (Weight >= 1200 KG) DO
         Display = "Weight is exceeding the capacity of elevator"
@@ -38,28 +52,7 @@ END SEQUENCE
 
 
 ---------------------------------------------------- SEQUENCES OF ESSENTIALS REQUIREMENTS -------------------------------------------------
-
-// Logic To Move Elevator To Distination
-
-SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
-
-    Initial Elevator-Postion = Current-Floor
-    While ((Demand-Floor - Elevator-Postion) > 0) DO
-        Move Up
-        REPEAT
-            Incriment Floor
-        UNTIL Demand-Floor =Elevator-Position
-    END WHILE
-
-    While ((Demand-Floor - Elevator-Position) < 0) DO
-        Move Down
-        REPEAT
-            Dicriment Floor
-        UNTIL Demand-Floor =Elevator-Position
-    END WHILE
-
-END SEQUENCE
-
+------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
 
 // Logic To Close Doors
 
@@ -72,44 +65,6 @@ SEQUENCE Close-Doors USING Time AND Barrier
     END WHILE
 
     SET Doors-Situation = Closed
-
-END SEQUENCE
-
-
-// Logic To Open Doors
-
-SEQUENCE Open-Doors USING Time AND Barrier
-
-    SET Doors-Situstion = Opened
-    Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
-    END WHILE
-
-    SET Doors-Situation = Closed
-
-END SEQUENCE
-
-
-// Logic To Move Elevator To Current-Floor
-
-SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
-
-    Initial Elevator-Postion = Best-Elevator-Position
-    While ((Current-Floor - Elevator-Position) > 0) DO
-        Move Up
-        REPEAT
-            Incriment Floor
-        UNTIL Current-Floor =Elevator-Position
-    END WHILE
-
-    While ((Current-Floor - Elevator-Position) < 0) DO
-        Move Down
-        REPEAT
-            Dicriment Floor
-        UNTIL Current-Floor =Elevator-Position
-    END WHILE
 
 END SEQUENCE
 
@@ -140,15 +95,75 @@ SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND Elevator1-Posit
 END SEQUENCE
 
 
+// Logic To Move Elevator To Current-Floor
+
+SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
+
+    Initial Elevator-Postion = Best-Elevator-Position
+    While ((Current-Floor - Elevator-Position) > 0) DO
+        Move Up
+        REPEAT
+            Incriment Floor
+        UNTIL Current-Floor =Elevator-Position
+    END WHILE
+
+    While ((Current-Floor - Elevator-Position) < 0) DO
+        Move Down
+        REPEAT
+            Dicriment Floor
+        UNTIL Current-Floor =Elevator-Position
+    END WHILE
+
+END SEQUENCE
+
+
+// Logic To Move Elevator To Distination
+
+SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
+
+    Initial Elevator-Postion = Current-Floor
+    While ((Demand-Floor - Elevator-Postion) > 0) DO
+        Move Up
+        REPEAT
+            Incriment Floor
+        UNTIL Demand-Floor =Elevator-Position
+    END WHILE
+
+    While ((Demand-Floor - Elevator-Position) < 0) DO
+        Move Down
+        REPEAT
+            Dicriment Floor
+        UNTIL Demand-Floor =Elevator-Position
+    END WHILE
+
+END SEQUENCE
+
+
+// Logic To Open Doors
+
+SEQUENCE Open-Doors USING Time AND Barrier
+
+    SET Doors-Situstion = Opened
+    Variable Waiting-Time = 0 sec
+    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status Detect Problems) DO
+        SET Doors-Situation = Opened
+        Waiting-Time = Waiting-Time + 1 sec
+    END WHILE
+
+    SET Doors-Situation = Closed
+
+END SEQUENCE
+
 
 //  ------------------------------------------------------  MAIN PROGRAM  ---------------------------------------------------------
-
+//  --------------------------------------------  SEQUENCES ARE ORDERED BY LOGIC ORDER --------------------------------------------
 
 // When User push the Call-Button.
 
-SEQUENCE Request-Elevator     USING       Current-Floor AND Direction AND Elevator-Position AND Waiting-Time AND Barrier
+SEQUENCE Request-Elevator     USING       Current-Floor AND Direction AND Elevator-Position AND Waiting-Time AND Barrier AND Alarm-Status
     
     CALL Find-Best-Elevator               WITH  CurrentFloor AND Direction And Elevator-Position  
+    CALL Check-Alarm-Status               WITH  Alarm-Status
     CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
@@ -157,9 +172,10 @@ END SEQUENCE
 
 // When User push the Request-Floor-Button From inside Elevator
 
-SEQUENCE Request-Floor        USING       Demand-Floor AND  Current-Floor AND Waiting-Time AND Barrier AND  Weight              
+SEQUENCE Request-Floor        USING       Demand-Floor AND  Current-Floor AND Waiting-Time AND Barrier AND  Weight AND Alarm-Status          
     
-    CALL Check Weight                     WITH  Weight
+    CALL Check-Weight                     WITH  Weight
+    CALL Check-Alarm-Status               WITH  Alarm-Status
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
     CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
@@ -170,6 +186,19 @@ END SEQUENCE
 // --------------------------------------------------  TESTING PROGRAM  -----------------------------------------------------------
 
 
-// Scenario 1:
+// Scenario 1: With elevator 1 Idle at floor 2 and elevator 2  Idle at floor 6, someone is on floor 3 and requests the 7th floor, 
+elevator 1 is expected to be sent.
+
+SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = UP AND Elevator-Position: Elevator1= 2 Idle Elevator2= 6 Idl
+    
+    CALL Find-Best-Elevator               Result:  
+    CALL Alarm-Status
+    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+
+END SEQUENCE
+
+
+
 
 
