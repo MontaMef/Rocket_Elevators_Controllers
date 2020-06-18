@@ -2,14 +2,21 @@
 --------------------------------------------------- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
 ------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
 
-// Logic To Operate Situation While Alarm is Detecting Problems Or No 
+// Elevator-Status has Four Differents Status: 
+Activ: When it is using by persons
+Inactiv: When It is Not Used. 
+ON SERVICE: If There Is No Problem Detected
+OUT OF SERVICE: If THere Is Problems Detected 
+
+// Logic To Operate Situation If Alarm System Of The Building Detects Problem. It Has Only Two Status Problem Or NoProblem
 
 SEQUENCE Check-Alarm-Status  USING Alarm-Status
     
     Variable Elevator-Status = ON SERVICE
-    WHILE( Alarm-Status Detect Problems )DO
-        Set Elevator-Status = Outside Service
+    WHILE( Alarm-Status:Problems )DO
+        Set Elevator-Status = OUT OF SERVICE
         CALL Open-Door
+        Display = "OUT OF SERVICE"
     END WHILE
 
 END SEQUENCE
@@ -21,7 +28,8 @@ SEQUENCE Check-Weight USING Weight
     
     WHILE (Weight >= 1200 KG) DO
         Display = "Weight is exceeding the capacity of elevator"
-        Don't move
+        Set Elevator-Status = OUT OF SERVICE
+        CALL Open-Door
     END WHILE
 
     Go To Next Step
@@ -71,17 +79,19 @@ END SEQUENCE
 
 // Find Available And Nearest Elevator By Searching Distance And Direction
 
-SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND Elevator1-Position AND Elevator2-Position
+SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND ElevatorN-Position
     
-    Variable Best-Elevator = Elevator1                               //  Suppose initially the best elevator is Elevator1
+    //  Suppose Initially That The Best Elevator is Elevator1
+
+    Variable Best-Elevator = Elevator1                               
     Variable Best-Distance = |Elevator1-Position  -  Current-Floor|
     
-    FOR EACH Elevator in Elevators
+    FOR EACH Elevator IN Elevators
         IF ( |Elevator-Position  -  Current-Floor| < Best-Distance ) 
 
             IF((Elevator is Inactiv) OR (Elevator is Activ AND Same Direction))
                 
-                Best-Elevator= Elevator
+                Best-Elevator = Elevator
                 Best-Distance = |Elevator-Position - Current-Floor|
 
             END IF
@@ -143,9 +153,9 @@ END SEQUENCE
 
 SEQUENCE Open-Doors USING Time AND Barrier
 
-    SET Doors-Situstion = Opened
+    SET Doors-Situation = Opened
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status Detect Problems) DO
+    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status:Problem) DO
         SET Doors-Situation = Opened
         Waiting-Time = Waiting-Time + 1 sec
     END WHILE

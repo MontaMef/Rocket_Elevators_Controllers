@@ -1,0 +1,193 @@
+
+--------------------------------------------------- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
+------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
+
+// Elevator-Status has Four Differents Status: 
+Activ: When it is using by persons
+Inactiv: When It is Not Used. 
+ON SERVICE: If There Is No Problem Detected By Alarm System Of The Building
+OUT OF SERVICE: If THere Is Problems Detected By Alarm System Of The Building
+
+// Logic To Operate Situation If Alarm System Of The Building Detects Problem. It Has Only Two Status Problem Or NoProblem
+
+SEQUENCE Check-Alarm-Status  USING Alarm-Status
+    
+    Variable Elevator-Status = ON SERVICE
+    WHILE( Alarm-Status:Problems )DO
+        Set Elevator-Status = OUT OF SERVICE
+        CALL Open-Door
+        Display = "OUT OF SERVICE"
+    END WHILE
+
+END SEQUENCE
+
+
+// Logic Of Loading: Check Weight until becoming less than 1200 KG
+
+SEQUENCE Check-Weight USING Weight
+    
+    WHILE (Weight >= 1200 KG) DO
+        Display = "Weight is exceeding the capacity of elevator"
+        Set Elevator-Status = OUT OF SERVICE
+        CALL Open-Door
+    END WHILE
+
+    Go To Next Step
+
+END SEQUENCE
+
+
+---------------------------------------------------- SEQUENCES OF ESSENTIALS REQUIREMENTS -------------------------------------------------
+------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
+
+// Logic To Close Doors
+
+SEQUENCE Close-Doors USING Time AND Barrier
+
+    Variable Waiting-Time = 0 sec
+    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
+        SET Doors-Situation = Opened
+        Waiting-Time = Waiting-Time + 1 sec
+    END WHILE
+
+    SET Doors-Situation = Closed
+
+END SEQUENCE
+
+
+
+
+// Logic To Choose The Right Column To Serve User.
+
+SEQUENCE Find-Best-Column USING Demand-Floor
+
+    Variable ARRAY Column-1 = 1, B1 To BN       // In Our Case 1, B1 To B6 -- This Column Serves Users To Reach Basements
+
+    Variable Nbr-Column = 3                     // Given By Requirements For The Commercial Controller
+
+    // The Following Calculations Helps To Know The Number Of Floors To Be Served By Each Column
+
+    Variable Nbr-Floor-Served-By-Column = (Nbr-Floor  -  Nbr-Basement-Floor) / Nbr-Column        
+    // In Our Case 20 Floors Per Column
+
+    // The Following Arrays Contains Floors To Be Served By Columns (Excluding Basements)
+
+    Variable ARRAY Column-2 = 1  To  Value OF Nbr-Floor-Served-By-Column    
+    // In Our Case 1 To 20
+
+    Variable ARRAY Column-3 = 1,  Value Of Nbr-Floor-Served-By-Column +1  To  Value Of 2x Nbr-Floor-Served-By-Column  
+    // In Our Case 1, 21 To 40
+
+    Variable ARRAY Column-4 = 1, Value Of 2x Nbr-Floor-Served-By-Column +1  To  Value Of 3x Nbr-Floor-Served-By-Column
+    // In Our Case 1, 41 To 60
+
+    //  Suppose Initially That The Best Column is Column1
+
+    Variable Best-Column = Column-1   
+
+
+    FOR EACH Column-N IN Columns 
+
+        IF (Demand-Floor Belong to ARRAY column-N)
+            Best-Column = column-N
+        END IF
+
+    END FOR
+
+    RETURN Best-Column
+
+END SEQUENCE
+
+
+//Logic To Find The Best And Nearest Elevator By Searching In Best-Column
+
+SEQUENCE Find-Best-Elevator USING Best-Column AND ElevatorN-Position
+
+    //  Suppose Initially That The Best Elevator is Elevator1
+    
+    Variable Best-Elevator = Elevator1                               
+    Variable Best-Distance = |Elevator1-Position  -  First-Floor|
+
+    FOR EACH Column-N IN Columns 
+
+        IF ( Column-N = Best-Column )
+
+            FOR EACH ElevatorN IN Column-N
+
+                IF ( |ElevatorN-Position  -  First-Floor| < Best-Distance ) 
+
+                    IF((ElevatorN is Inactiv) OR (ElevatorN is Activ AND Opposite Direction))
+                
+                        Best-Elevator = ElevatorN
+                        Best-Distance = |ElevatorN-Position - First-Floor|
+
+                    END IF
+          
+                END IF 
+
+            END FOR
+
+        END IF
+
+    END FOR
+
+    RETURN Best-Elevator
+END SEQUENCE
+
+
+// Logic To Open Doors
+
+SEQUENCE Open-Doors USING Time AND Barrier
+
+    SET Doors-Situation = Opened
+    Variable Waiting-Time = 0 sec
+    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status Detect Problems) DO
+        SET Doors-Situation = Opened
+        Waiting-Time = Waiting-Time + 1 sec
+    END WHILE
+
+    SET Doors-Situation = Closed
+
+END SEQUENCE
+
+
+//  ------------------------------------------------------  MAIN PROGRAM  ---------------------------------------------------------
+//  --------------------------------------------------  SEQUENCES ARE ORDERED BY LOGIC ORDER  -------------------------------------
+
+// When User push the Request-Floor-Button From Outside Elevator (From A Panel Fixed Outside The Elevators Without USING A Call-Button)
+In The First Floor (RC) To Go UP Or DOWN
+
+SEQUENCE Request-Floor         USING      Demand-Floor
+    
+    CALL Find-Best-Column                 WITH  Demand-Floor
+    CALL Find-Best-Elevator               WITH  Best-Column  // (Returned By Find-Best-Column)
+    CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
+    CALL Move-Elevator-To-First-Floor     WITH  Best-Elevator                                
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+    CALL Check-Weight                     WITH  Weight        // If Weight > 1200KG Display: Weight is exceeding the capacity of elevator
+    CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
+    CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
+    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+
+END SEQUENCE
+
+
+// When User push the Call-Button From Outside Elevator To Go To The First Floor (RC)
+
+SEQUENCE Request-First-Floor    USING     Call-Button
+    
+    CALL Find-Best-Column                 WITH  Demand-Floor
+    CALL Find-Best-Elevator               WITH  Demand-Floor AND Best-Column // (Returned By Find-Best-Column)
+    CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
+    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+    CALL Check-Weight                     WITH  Weight
+    CALL Check-Alarm-Status               WITH  Alarm-Status
+    CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
+    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
+    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+
+END SEQUENCE
+
+
