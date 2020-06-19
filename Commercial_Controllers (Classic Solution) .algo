@@ -53,11 +53,11 @@ Column-4 FLOORS (40 to 60)                ELEVATORS (10, 11, 12)
 
 SEQUENCE Check-Alarm-Status  USING Alarm-Status
     
-    Variable Elevator-Status = ON SERVICE
+    Variable Best-Elevator-Status = ON SERVICE         // Attribute
     WHILE( Alarm-Status:Problem )DO
-        Set Elevator-Status = OUT OF SERVICE
+        Set Best-Elevator-Status = OUT OF SERVICE
         CALL Open-Door
-        Display = "OUT OF SERVICE"
+        Display in Best-Elevator = "OUT OF SERVICE"
     END WHILE
 
 END SEQUENCE
@@ -67,9 +67,9 @@ END SEQUENCE
 
 SEQUENCE Check-Weight USING Weight
     
-    WHILE (Weight >= 2000 KG) DO
-        Display = "Weight is exceeding the capacity of elevator"
-        Set Elevator-Status = OUT OF SERVICE
+    WHILE (Best-Elevator-Weight >= 2000 KG) DO
+        Display in Best-Elevator = "Weight is exceeding the capacity of elevator"
+        Set Best-Elevator-Status = OUT OF SERVICE
         CALL Open-Door
     END WHILE
 
@@ -85,62 +85,88 @@ END SEQUENCE
 SEQUENCE Close-Doors USING Time AND Barrier
 
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
+    WHILE (Best-Elevator-Waiting-Time < 7 seconds OR Barrier = True) DO
+        SET Best-Elevator-Doors-Situation = Opened
+        Best-Elevator-Waiting-Time = Best-Elevator-Waiting-Time + 1 sec
     END WHILE
 
-    SET Doors-Situation = Closed
+    SET Best-Elevator-Doors-Situation = Closed       // Attribute
 
 END SEQUENCE
 
 
 // Find Available And Nearest Elevator By Searching Distance And Direction
 
-SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND ElevatorN-Position
+SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction 
     
-    Variable ARRAY Column-N = Elevator-1 to Elevator-N                         // In our case Elevator-1, Elevator-2  and Elevator-3
+    Variable ARRAY Column-1 = 1, -1 To -N       
+    // In Our Case 1, -1 To -6. This Column Serves Users To Reach Basements
+    // For Mathematic Reasons, I replaced B1 By -1 Until B6 By -6
 
-    // Suppose Initially That The Best Elevator is Elevator-1
+    Variable Nbr-Column = 3                     // Given By Requirements For The Commercial Controller
 
-    Variable Best-Elevator = Elevator-1                               
-    Variable Best-Distance = |Elevator-1-Position  -  Current-Floor|
-    Variable Column-N = Column-1
+    // The Following Calculations Helps To Know The Number Of Floors To Be Served By Each Column
 
-    FOR EACH Elevator-N IN Column-N
-        IF ( |Elevator-N-Position  -  Current-Floor| < Best-Distance ) 
+    Variable Nbr-Floor-Served-By-Column = (Nbr-Floor  -  Nbr-Basement-Floor) / Nbr-Column      
+    // In Our Case 20 Floors Per Column, (66-6)/3  = 20
 
-            IF((Elevator-N is Inactiv) OR (Elevator-N is Activ AND Same Direction))
+    // The Following Arrays Contains Floors To Be Served By Each Column (Excluding Basements)
+
+    Variable ARRAY Column-2 = 1  To  Value OF Nbr-Floor-Served-By-Column    
+    // In Our Case 1 To 20
+
+    Variable ARRAY Column-3 =  Value Of Nbr-Floor-Served-By-Column   To  Value Of 2x Nbr-Floor-Served-By-Column  
+    // In Our Case  20 To 40
+
+    Variable ARRAY Column-4 =  Value Of 2x Nbr-Floor-Served-By-Column  To  Value Of 3x Nbr-Floor-Served-By-Column
+    // In Our Case  40 To 60
+
+    Variable ARRAY ColumnS = Column-1 To Column-N        // This ARRAY regroups all the Columns
+    // In Our Case ColumnS = Column-1, Column-2, Column-3, Column-4 
+    
+    FOR EACH Column-N IN ColumnS
+        IF (  CurrentFloor Belong To ARRAY OF Column-N )
+            
+            Variable Best-Elevator = First-Elevator From THE Array of Right Column // When CurrentFloor Belong To ARRAY OF Column-N                             
+            Variable Best-Distance = | First-Elevator -  Current-Floor|
+
+            FOR EACH Elevator-N IN Column-N
+                IF ( |Elevator-N-Position  -  Current-Floor| < Best-Distance ) 
+
+                     IF((Elevator-N is Inactiv) OR (Elevator-N is Activ AND Same Direction))
                 
-                Best-Elevator = Elevator-N
-                Best-Distance = |Elevator-N-Position - Current-Floor|
+                        Best-Elevator = Elevator-N
+                        Best-Distance = |Elevator-N-Position - Current-Floor|
+                        Best-Column = Column-NoProblem
 
-            END IF
+                    END IF
           
-        END IF 
+                END IF 
 
-    END FOR
+            END FOR
+        END IF
 
     Variable Best-Elevator-Position = Best-Elevator Postion
     Return Best-Elevator, Best-Elevator Postion     // Elevator Attribute
+    Return Best-Column
 
 END SEQUENCE
 
 
 // Logic To Move Elevator To Current-Floor
 
-SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
+SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator 
 
     
     While ((Current-Floor - Best-Elevator-Position) > 0) DO  // Example 5-2 > 0
-        Move Up
+        Move Best-Elevator Up
         REPEAT
             Incriment Floor
         UNTIL Current-Floor = Best-Elevator-Position
     END WHILE
 
     While ((Current-Floor - Best-Elevator-Position) < 0) DO  // Example 3-6 < 0
-        Move Down
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
         UNTIL Current-Floor = Best-Elevator-Position
@@ -151,21 +177,21 @@ END SEQUENCE
 
 // Logic To Move Elevator To Distination
 
-SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
+SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor AND Best-Elevator
 
     
-    While ((Demand-Floor - Current-Floor) > 0) DO
-        Move Up
+    While ((Demand-Floor - Current-Floor) > 0) DO         // Example 10 -5 > 0
+        Move Best-Elevator Up
         REPEAT
             Incriment Floor
-        UNTIL Demand-Floor = Current-Floor
+        UNTIL Demand-Floor = Best-Elevator-Position
     END WHILE
 
-    While ((Demand-Floor - Current-Floor) < 0) DO
-        Move Down
+    While ((Demand-Floor - Current-Floor) < 0) DO         // Example 5-9 < 0
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
-        UNTIL Demand-Floor = Current-Floor
+        UNTIL Demand-Floor = Best-Elevator-Position
     END WHILE
 
 END SEQUENCE
@@ -175,16 +201,17 @@ END SEQUENCE
 
 SEQUENCE Open-Doors USING Time AND Barrier
 
-    SET Doors-Situation = Opened
+    SET Best-Elevator-Doors-Situation = Opened      // Attribute
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status:Problem) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
+    WHILE (Best-Elevator-Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status:Problem) DO
+        SET Best-Elevator-Doors-Situation = Opened
+        Best-Elevator-Waiting-Time = Best-Elevator-Waiting-Time + 1 sec
     END WHILE
 
-    SET Doors-Situation = Closed
+    SET Best-Elevator-Doors-Situation = Closed
 
 END SEQUENCE
+
 
 
 
@@ -193,12 +220,13 @@ END SEQUENCE
 
 // When User push the Call-Button.
 // By Pushing Call-Button The Following Informations Will Be Known: Current-Floor AND Direction
+// Only Column-1 (Serves Basments) AND Column-2(Serves Floor-1 to Floor-20) can reach First-Floor
 
 SEQUENCE Request-Elevator     USING       Current-Floor AND Direction
     
     CALL Find-Best-Elevator               WITH  Current-Floor AND Direction 
     CALL Check-Alarm-Status               WITH  Alarm-Status  // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
-    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
+    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Best-Elevator                             
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
@@ -211,7 +239,7 @@ SEQUENCE Request-Floor        USING       Demand-Floor AND Current-Floor
     CALL Check-Weight                     WITH  Weight
     CALL Check-Alarm-Status               WITH  Alarm-Status
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
-    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
+    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor AND Best-Elevator
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
@@ -226,6 +254,8 @@ and requests the 20th floor, elevator B5 is expected to be sent
 
 
 Column-2 (B)   FLOORS (1 to 20)                   ELEVATORS B1, B2, B3, B4, B5)
+
+// User Should Go To Column-2 (B)
 
 SEQUENCE Request-Elevator     USING       Current-Floor = 1 AND Direction = UP
     

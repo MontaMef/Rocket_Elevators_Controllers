@@ -45,11 +45,11 @@ NoProblem: No problems to be detected
 
 SEQUENCE Check-Alarm-Status  USING Alarm-Status
     
-    Variable Elevator-Status = ON SERVICE
+    Variable Best-Elevator-Status = ON SERVICE         // Attribute
     WHILE( Alarm-Status:Problem )DO
-        Set Elevator-Status = OUT OF SERVICE
+        Set Best-Elevator-Status = OUT OF SERVICE
         CALL Open-Door
-        Display = "OUT OF SERVICE"
+        Display in Best-Elevator = "OUT OF SERVICE"
     END WHILE
 
 END SEQUENCE
@@ -59,9 +59,9 @@ END SEQUENCE
 
 SEQUENCE Check-Weight USING Weight
     
-    WHILE (Weight >= 1200 KG) DO
-        Display = "Weight is exceeding the capacity of elevator"
-        Set Elevator-Status = OUT OF SERVICE
+    WHILE (Best-Elevator-Weight >= 1200 KG) DO
+        Display in Best-Elevator = "Weight is exceeding the capacity of elevator"
+        Set Best-Elevator-Status = OUT OF SERVICE
         CALL Open-Door
     END WHILE
 
@@ -101,21 +101,21 @@ END SEQUENCE
 SEQUENCE Close-Doors USING Time AND Barrier
 
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
+    WHILE (Best-Elevator-Waiting-Time < 7 seconds OR Barrier = True) DO
+        SET Best-Elevator-Doors-Situation = Opened
+        Best-Elevator-Waiting-Time = Best-Elevator-Waiting-Time + 1 sec
     END WHILE
 
-    SET Doors-Situation = Closed
+    SET Best-Elevator-Doors-Situation = Closed       // Attribute
 
 END SEQUENCE
 
 
-// Find Available And Nearest Elevator By Searching Distance And Direction
+// Logic To Find Available And Nearest Elevator By Searching Distance And Direction
 
-SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND ElevatorN-Position
+SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction 
     
-    Variable ARRAY Column = Elevator-1 to Elevator-N                         // In our case Elevator-1 and Elevator-2 
+    Variable ARRAY Column = Elevator-1 to Elevator-N           // In our case Elevator-1 and Elevator-2 
 
     // Suppose Initially That The Best Elevator is Elevator-1
 
@@ -144,18 +144,18 @@ END SEQUENCE
 
 // Logic To Move Elevator To Current-Floor
 
-SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
+SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator
 
     
     While ((Current-Floor - Best-Elevator-Position) > 0) DO  // Example 5-2 > 0
-        Move Up
+        Move Best-Elevator Up
         REPEAT
             Incriment Floor
         UNTIL Current-Floor = Best-Elevator-Position
     END WHILE
 
     While ((Current-Floor - Best-Elevator-Position) < 0) DO  // Example 3-6 < 0
-        Move Down
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
         UNTIL Current-Floor = Best-Elevator-Position
@@ -166,18 +166,18 @@ END SEQUENCE
 
 // Logic To Move Elevator To Distination
 
-SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
+SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor AND Best-Elevator
 
     
     While ((Demand-Floor - Current-Floor) > 0) DO
-        Move Up
+        Move Best-Elevator Up
         REPEAT
             Incriment Floor
         UNTIL Demand-Floor = Current-Floor
     END WHILE
 
     While ((Demand-Floor - Current-Floor) < 0) DO
-        Move Down
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
         UNTIL Demand-Floor = Current-Floor
@@ -190,14 +190,14 @@ END SEQUENCE
 
 SEQUENCE Open-Doors USING Time AND Barrier
 
-    SET Doors-Situation = Opened
+    SET Best-Elevator-Doors-Situation = Opened      // Attribute
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status:Problem) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
+    WHILE (Best-Elevator-Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status:Problem) DO
+        SET Best-Elevator-Doors-Situation = Opened
+        Best-Elevator-Waiting-Time = Best-Elevator-Waiting-Time + 1 sec
     END WHILE
 
-    SET Doors-Situation = Closed
+    SET Best-Elevator-Doors-Situation = Closed
 
 END SEQUENCE
 
@@ -212,8 +212,8 @@ SEQUENCE Request-Elevator     USING       Current-Floor AND Direction
     
     CALL Find-Best-Elevator               WITH  Current-Floor AND Direction 
     CALL Check-Alarm-Status               WITH  Alarm-Status  // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
-    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
-    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Best-Elevator                               
+    CALL Open-Doors                       WITH  Best-Elevator AND Waiting-Time AND Barrier 
 
 END SEQUENCE
 
@@ -224,9 +224,9 @@ SEQUENCE Request-Floor        USING       Demand-Floor AND Current-Floor
     
     CALL Check-Weight                     WITH  Weight
     CALL Check-Alarm-Status               WITH  Alarm-Status
-    CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
-    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
-    CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
+    CALL Close-Doors                      WITH  Best-Elevator AND Waiting-Time AND Barrier                                     
+    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor AND Best-Elevator
+    CALL Open-Doors                       WITH  Best-Elevator AND Waiting-Time AND Barrier 
 
 END SEQUENCE
 

@@ -55,11 +55,11 @@ Column-4 FLOORS (1, 41 to 60)                ELEVATORS (10, 11, 12)
 
 SEQUENCE Check-Alarm-Status  USING Alarm-Status
     
-    Variable Elevator-Status = ON SERVICE
+    Variable Best-Elevator-Status = ON SERVICE         // Attribute
     WHILE( Alarm-Status:Problem )DO
-        Set Elevator-Status = OUT OF SERVICE
+        Set Best-Elevator-Status = OUT OF SERVICE
         CALL Open-Door
-        Display = "OUT OF SERVICE"
+        Display in Best-Elevator  = "OUT OF SERVICE"
     END WHILE
 
 END SEQUENCE
@@ -69,9 +69,9 @@ END SEQUENCE
 
 SEQUENCE Check-Weight USING Weight
     
-    WHILE (Weight >= 2000 KG) DO
-        Display = "Weight is exceeding the capacity of elevator"
-        Set Elevator-Status = OUT OF SERVICE
+    WHILE (Best-Elevator-Weight >= 2000 KG) DO
+        Display in Best-Elevator = "Weight is exceeding the capacity of elevator"
+        Set Best-Elevator-Status = OUT OF SERVICE
         CALL Open-Door
     END WHILE
 
@@ -88,12 +88,12 @@ END SEQUENCE
 SEQUENCE Close-Doors USING Time AND Barrier
 
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
+    WHILE (Best-Elevator-Waiting-Time < 7 seconds OR Barrier = True) DO
+        SET Best-Elevator-Doors-Situation = Opened
+        Best-Elevator-Waiting-Time = Best-Elevator-Waiting-Time + 1 sec
     END WHILE
 
-    SET Doors-Situation = Closed
+    SET Best-Elevator-Doors-Situation = Closed       // Attribute
 
 END SEQUENCE
 
@@ -104,7 +104,7 @@ SEQUENCE Find-Best-Column USING Demand-Floor
 
     Variable ARRAY Column-1 = 1, -1 To -N       
     // In Our Case 1, -1 To -6. This Column Serves Users To Reach Basements
-    // For Mthematic Reasons, I replaced B1 By -1 Until B6 By -6
+    // For Mathematic Reasons, I replaced B1 By -1 Until B6 By -6
 
     Variable Nbr-Column = 3                     // Given By Requirements For The Commercial Controller
 
@@ -124,12 +124,10 @@ SEQUENCE Find-Best-Column USING Demand-Floor
     Variable ARRAY Column-4 = 1, Value Of 2x Nbr-Floor-Served-By-Column +1  To  Value Of 3x Nbr-Floor-Served-By-Column
     // In Our Case 1, 41 To 60
 
-    //  Suppose Initially That The Best Column is Column1
+    Variable ARRAY ColumnS = Column-1 To Column-N        // This ARRAY regroups all the Columns
+    // In Our Case ColumnS = Column-1, Column-2, Column-3, Column-4 
 
-    Variable Best-Column = Column-1   
-
-
-    FOR EACH Column-N IN Columns 
+    FOR EACH Column-N IN ColumnS
 
         IF (Demand-Floor Belong to ARRAY column-N)
             Best-Column = column-N
@@ -144,33 +142,25 @@ END SEQUENCE
 
 //Logic To Find The Best And Nearest Elevator By Searching In Best-Column
 
-SEQUENCE Find-Best-Elevator USING Best-Column AND ElevatorN-Position
+SEQUENCE Find-Best-Elevator USING Best-Column AND Direction
 
-    //  Suppose Initially That The Best Elevator is Elevator1
+    //  Suppose Initially That The Best Elevator is First-Elevator-IN-Best-Column
     
-    Variable Best-Elevator = Elevator1                               
-    Variable Best-Distance = |Elevator1-Position  -  First-Floor|
+    Variable Best-Elevator = First-Elevator-IN-Best-Column    // From The ARRAY Of Best-Column                          
+    Variable Best-Distance = |First-Elevator-IN-Best-Column-Position  -  First-Floor|
 
-    FOR EACH Column-N IN Columns 
+    FOR EACH Elevator-N IN Best-Column
 
-        IF ( Column-N = Best-Column )
+        IF ( |ElevatorN-Position  -  First-Floor| < Best-Distance ) 
 
-            FOR EACH ElevatorN IN Column-N
-
-                IF ( |ElevatorN-Position  -  First-Floor| < Best-Distance ) 
-
-                    IF((ElevatorN is Inactiv) OR (ElevatorN is Activ AND Opposite Direction))
+            IF((ElevatorN is Inactiv) OR (ElevatorN is Activ AND Opposite Direction))
                 
                         Best-Elevator = ElevatorN
                         Best-Distance = |ElevatorN-Position - First-Floor|
 
-                    END IF
+            END IF
           
-                END IF 
-
-            END FOR
-
-        END IF
+        END IF 
 
     END FOR
 
@@ -179,20 +169,20 @@ SEQUENCE Find-Best-Elevator USING Best-Column AND ElevatorN-Position
 END SEQUENCE
 
 
-SEQUENCE Find-Best-Elevator-Down USING Current-Floor AND Column-N AND Direction:Down
+SEQUENCE Find-Best-Elevator-Back USING Current-Floor AND Column-N AND Direction
 
     //  Suppose Initially That The Best Elevator is First Elevator In The ARRAY Of Column-N
 
     Variable Best-Elevator-Down = First-Elevator-OF-Column-N                               
     Variable Best-Distance = |First-Elevator-OF-Column-N-Position  -  Current-Floor|
     
-    FOR EACH Elevator IN Column-N
-        IF ( |Elevator-Position  -  Current-Floor| < Best-Distance ) 
+    FOR EACH Elevator-N IN Column-N
+        IF ( |Elevator-N-Position  -  Current-Floor| < Best-Distance ) 
 
-            IF((Elevator is Inactiv) OR (Elevator is Activ AND Same Direction))
+            IF((Elevator-N is Inactiv) OR (Elevator is Activ AND Same Direction))
                 
-                Best-Elevator = Elevator
-                Best-Distance = |Elevator-Position - Current-Floor|
+                Best-Elevator = Elevator-N
+                Best-Distance = |Elevator-N-Position - Current-Floor|
 
             END IF
           
@@ -200,23 +190,23 @@ SEQUENCE Find-Best-Elevator-Down USING Current-Floor AND Column-N AND Direction:
 
     END FOR
 
-    Return Best-Elevator-Down, Best-Elevator-Down Position  // Elevator Attribute
+    Return Best-Elevator, Best-Elevator Position  // Elevator Attribute
 
 END SEQUENCE
 
 // Logic To Move Best Elevator To Current Floor To GO To The First Floor
 
-SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
+SEQUENCE Move-Elevator-To-Current-Floor USING Current-Floor AND Best-Elevator
 
-    While ((Current-Floor - Best-Elevator-Position) > Or = 0) DO      //Example: 10-1 > 0 Or 1-1 = 0  
-        Move Up
+    While ((Current-Floor - Best-Elevator-Position) >o ) DO               //Example: 5 - 4 > 0 
+        Move Best-Elevator Up
         REPEAT
             Incriment Floor
         UNTIL Current-Floor = Best-Elevator-Position
     END WHILE
 
-    While ((Current-Floor - Best-Elevator-Position) < 0) DO                //Example: -1-1 < 0
-        Move Down
+    While ((Current-Floor - Best-Elevator-Position) < 0) DO                //Example: 5 - 10 < 0
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
         UNTIL Current-Floor = Best-Elevator-Position
@@ -229,15 +219,15 @@ END SEQUENCE
 
 SEQUENCE Move-Elevator-To-Destination USING First-Floor AND Demand-Floor
 
-    While ((First-Floor - Best-Elevator-Floor) > Or = 0) DO            //Example: 10-1 > 0 Or 1-1 = 0 
-        Move Up
+    While ((Demand-Floor  -  First-Floor ) > 0) DO             // Example: 10-1 > 0 
+        Move Best-Elevator Up
         REPEAT
             Incriment Floor
         UNTIL First-Floor = Best-Elevator-Position
     END WHILE
 
-    While ((First-Floor - Best-Elevator-Position) < 0) DO              //Example: -1-1 < 0
-        Move Down
+    While ((Demand-Floor  -  First-Floor) < 0) DO              //Example: -1-1 < 0
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
         UNTIL First-Floor = Best-Elevator-Position
@@ -246,22 +236,22 @@ SEQUENCE Move-Elevator-To-Destination USING First-Floor AND Demand-Floor
 END SEQUENCE
 
 
-SEQUENCE  Move-Elevator-To-First-Floor  USING  Best-Elevator
+SEQUENCE  Move-Elevator-To-First-Floor  USING  Best-Elevator AND First-Floor
 
     
      While ((First-Floor - Best-Elevator-Position) > 0) DO   // Example: 1 - (-1) > 0
-        Move Up
+        Move Best-Elevator Up
         REPEAT
         Incriment Floor
-        UNTIL First-Floor =Best-Elevator-Position
+        UNTIL First-Floor = Best-Elevator-Position
     
     END WHILE
     
     While ((First-Floor - Best-Elevator-Position) < 0) DO    // Example: 1 - 10 < 0
-        Move Down
+        Move Best-Elevator Down
         REPEAT
             Dicriment Floor
-        UNTIL First-Floor =Best-Elevator-Position
+        UNTIL First-Floor = Best-Elevator-Position
 
     END WHILE
 
@@ -272,14 +262,14 @@ END SEQUENCE
 
 SEQUENCE Open-Doors USING Time AND Barrier
 
-    SET Doors-Situation = Opened
+    SET Best-Elevator-Doors-Situation = Opened      // Attribute
     Variable Waiting-Time = 0 sec
-    WHILE (Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status Detect Problems) DO
-        SET Doors-Situation = Opened
-        Waiting-Time = Waiting-Time + 1 sec
+    WHILE (Best-Elevator-Waiting-Time < 7 seconds OR Barrier = True OR Alarm-Status:Problem) DO
+        SET Best-Elevator-Doors-Situation = Opened
+        Best-Elevator-Waiting-Time = Best-Elevator-Waiting-Time + 1 sec
     END WHILE
 
-    SET Doors-Situation = Closed
+    SET Best-Elevator-Doors-Situation = Closed
 
 END SEQUENCE
 
@@ -290,17 +280,17 @@ END SEQUENCE
 // When User push the Request-Floor-Button From Outside Elevator (From A Panel Fixed Outside The Elevators Without USING A Call-Button)
 In The First Floor (RC) To Go UP Or DOWN
 
-SEQUENCE Request-Floor         USING      Demand-Floor
+SEQUENCE Request-Floor         USING      Demand-Floor AND  Current-Floor = 1st-Floor
     
-    CALL Find-Best-Column                 WITH  Demand-Floor
-    CALL Find-Best-Elevator               WITH  Best-Column  // (Returned By Find-Best-Column)
+    CALL Find-Best-Column                 WITH  Demand-Floor 
+    CALL Find-Best-Elevator               WITH  Best-Column AND Direction 
     CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
-    CALL Move-Elevator-To-First-Floor     WITH  Best-Elevator-Position   // Attribute Of Best-Elevator                               
+    CALL Move-Elevator-To-First-Floor     WITH  Best-Elevator AND 1st Floor  // Attribute Of Best-Elevator                               
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
     CALL Check-Weight                     WITH  Weight        // If Weight >= 2000KG Display: Weight is exceeding the capacity of elevator
     CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
-    CALL Move-Elevator-To-Destination     WITH  First-Floor AND Demand-Floor
+    CALL Move-Elevator-To-Destination     WITH  1st-Floor AND Demand-Floor
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
@@ -309,16 +299,16 @@ END SEQUENCE
 // When User Push the Call-Button From Outside Elevator To Go To The First Floor (RC)
 // By Pushing Call-Button The Following Informations Will Be Known: Current-Floor AND Column-N AND Direction
 
-SEQUENCE Request-First-Floor    USING     Current-Floor AND Column-N AND Direction:Down
+SEQUENCE Request-First-Floor    USING     Current-Floor AND Column-N AND Direction
     
-    CALL Find-Best-Elevator-Down          WITH  Current-Floor AND Column-N AND Direction:Down
+    CALL Find-Best-Elevator-Back          WITH  Current-Floor AND Column-N AND Direction
     CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
-    CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
+    CALL Move-Elevator-To-Current-Floor   WITH  Current-Floor AND Best-Elevator                            
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
     CALL Check-Weight                     WITH  Weight
     CALL Check-Alarm-Status               WITH  Alarm-Status
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
-    CALL Move-Elevator-To-First-Floor     WITH  Current-Floor AND Demand-Floor
+    CALL Move-Elevator-To-First-Floor     WITH  Current-Floor AND First-Floor AND Best-Elevator
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
@@ -375,5 +365,7 @@ SEQUENCE Request-Floor         USING      Demand-Floor = 36
     CALL Open-Doors                            Result  ok
 
 END SEQUENCE
+
+
 
 -------------------------------------------------- END --------------------------------------------------------------------------------
