@@ -1,11 +1,11 @@
 # Rocket_Elevators_Controllers
 
-Odyssey Program
-Week 1 - Algorithms and Problem Solving
-This project is formed by the following documents:
-ReadME (The current document)
-Commercial_Controllers(Modern Solution).algo
-Commercial_Controllers(Classic Solution).algo
+Odyssey Program /
+Week 1 - Algorithms and Problem Solving /
+This project is formed by the following documents: /
+ReadME (The current document) /
+Commercial_Controllers(Modern Solution).algo /
+Commercial_Controllers(Classic Solution).algo /
 Residential_Controllers.algo
 
 ----------------------------------------------------------------------------------------------------------------------------------------
@@ -45,28 +45,14 @@ To go back or to move to another floor, user follows alawyas the same procedure.
 # SUMMARY
 Each algorithm conatins the following summary
 
-1- SEQUENCES OF ADDITIONAL REQUIREMENTS
-2- SEQUENCES OF ESSENTIALS REQUIREMENTS
-3- MAIN PROGRAM 
-4- TESTING PROGRAM
+1- SEQUENCES OF ADDITIONAL REQUIREMENTS /
+2- SEQUENCES OF ESSENTIALS REQUIREMENTS/
+3- MAIN PROGRAM /
+4- TESTING PROGRAM /
 
-----------------------------------------------------------------------------------------------------------------------------------------
 
-# Notes
 
-Attributes:
-Elevator-N-Position is an attribute of Elevator-N 
 
-Status:
-Elevator-Status has Four Differents Status: 
-Activ: When it is using by persons
-Inactiv: When It is Not Used. 
-ON SERVICE: If There Is No Problem Detected By Alarm System Of The Building
-OUT OF SERVICE: If THere Is Problems Detected By Alarm System Of The Building
-
-Alarm-Status: It has only two status (It is an alarm of the entire building. So the outputs are considered as entries in this algorithm)
-Problem: Whwn alarm detects problems like fire or seisim ect.
-NoProblem: No problems to be detected
 
 
 
