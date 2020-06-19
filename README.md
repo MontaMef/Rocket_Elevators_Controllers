@@ -23,8 +23,8 @@ number of floors (excluding the first column wich serves only to go to the basem
 the waiting-time. To go back, User push Call-Button fixed outside elevators in each floor (excluding first floor) and the algorithm 
 will find the best available elevator to take user back to the first floor.
 
-Advantage: Reduce the waiting-time
-Disadvantage: This algorithm does not allow users to use elevators in enetnd to go betwwen other floors. 
+//Advantage: Reduce the waiting-time
+//Disadvantage: This algorithm does not allow users to use elevators in enetnd to go betwwen other floors. 
 Instead, it serves only between first floor and demand floor or between current floor and first floor.
 
 # Commercial_Controllers(Classic Solution).algo
@@ -38,8 +38,8 @@ number of floors (excluding the first column wich serves only to go to the basem
 first floor to floor 35. He should take an elevator from RC to 20th floor and than from 20th floor to floor nbr 35. Each column 
 serves only 20 floors and only column-1 and column-2 had access to first floor
 
-Advantage: Distribute the service of floors between cloumns
-Disadvantage: This algorithm does not allow users to use only one elevator to reach floors higher then 20.
+//Advantage: Distribute the service of floors between cloumns
+//Disadvantage: This algorithm does not allow users to use only one elevator to reach floors higher then 20.
 They should take more than one elevator. It is not good choice for many poeple.
 
 # Residential_Controllers.algo
