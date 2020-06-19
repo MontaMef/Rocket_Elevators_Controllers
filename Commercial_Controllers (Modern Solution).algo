@@ -1,12 +1,49 @@
 
---------------------------------------------------- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
-------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
+//------------------------------------------------- BRIEF DESCRIPTION / SUMMARY / NOTES -------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
 
-// Elevator-Status has Four Differents Status: 
+// BRIEF DESCRIPTION:
+
+This algorithm is based on MODERN SOLUTION to serve users of elevators in Commercial and Corporate buildings. The following text 
+explains this concept:
+In the first floor there is a panel fixed outside elevators allowing user to demand the request floor by entering its number 
+(so there is no need to fix a Call-Button in the first floor). The algorithm will do some calculations and display the best available 
+elevator to take. The distribution of 12 elevators are done in 4 Columns. Each Column contains 3 elevators and each one serves an equal 
+number of floors (excluding the first column wich serves only to go to the basement floors). This method allows system to reduce 
+the waiting-time. To go back, User push Call-Button fixed outside elevators in each floor (excluding first floor) and the algorithm 
+will find the best available elevator to take user back to the first floor.
+
+Advantage: Reduce the waiting-time
+Disadvantage: This algorithm does not allow users to use elevators in enetnd to go betwwen other floors. 
+Instead, it serves only between first floor and demand floor or between current floor and first floor.
+
+
+// SUMMARY:
+
+1- SEQUENCES OF ADDITIONAL REQUIREMENTS
+2- SEQUENCES OF ESSENTIALS REQUIREMENTS
+3- MAIN PROGRAM 
+4- TESTING PROGRAM
+
+
+// NOTES:
+
+Attributes:
+Elevator-N-Position is an attribute of Elevator-N 
+
+Status:
+Elevator-Status has Four Differents Status: 
 Activ: When it is using by persons
 Inactiv: When It is Not Used. 
 ON SERVICE: If There Is No Problem Detected By Alarm System Of The Building
 OUT OF SERVICE: If THere Is Problems Detected By Alarm System Of The Building
+
+Alarm-Status: It has only two status (It is an alarm of the entire building. So the outputs are considered as entries in this algorithm)
+Problem: Whwn alarm detects problems like fire or seisim ect.
+NoProblem: No problems to be detected
+
+//------------------------------------------------ 1- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
+------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
 
 // Logic To Operate Situation If Alarm System Of The Building Detects Problem. It Has Only Two Status Problem Or NoProblem
 
@@ -22,11 +59,11 @@ SEQUENCE Check-Alarm-Status  USING Alarm-Status
 END SEQUENCE
 
 
-// Logic Of Loading: Check Weight until becoming less than 1200 KG
+// Logic Of Loading: Check Weight until becoming less than 2000 KG
 
 SEQUENCE Check-Weight USING Weight
     
-    WHILE (Weight >= 1200 KG) DO
+    WHILE (Weight >= 2000 KG) DO
         Display = "Weight is exceeding the capacity of elevator"
         Set Elevator-Status = OUT OF SERVICE
         CALL Open-Door
@@ -37,7 +74,7 @@ SEQUENCE Check-Weight USING Weight
 END SEQUENCE
 
 
----------------------------------------------------- SEQUENCES OF ESSENTIALS REQUIREMENTS -------------------------------------------------
+//----------------------------------------------- 2- SEQUENCES OF ESSENTIALS REQUIREMENTS -------------------------------------------------
 ------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
 
 // Logic To Close Doors
@@ -136,9 +173,70 @@ SEQUENCE Find-Best-Elevator USING Best-Column AND ElevatorN-Position
 END SEQUENCE
 
 
+SEQUENCE Find-Best-Elevator-Down USING Current-Floor AND Column-N AND Direction:Down
+
+    //  Suppose Initially That The Best Elevator is First Elevator In The ARRAY Of Column-N
+
+    Variable Best-Elevator-Down = First-Elevator-OF-Column-N                               
+    Variable Best-Distance = |First-Elevator-OF-Column-N-Position  -  Current-Floor|
+    
+    FOR EACH Elevator IN Column-N
+        IF ( |Elevator-Position  -  Current-Floor| < Best-Distance ) 
+
+            IF((Elevator is Inactiv) OR (Elevator is Activ AND Same Direction))
+                
+                Best-Elevator = Elevator
+                Best-Distance = |Elevator-Position - Current-Floor|
+
+            END IF
+          
+        END IF 
+
+    END FOR
+
+    Return Best-Elevator-Down, Best-Elevator-Down Position  // Elevator Attribute
+
+END SEQUENCE
+
+// Logic To Move Best Elevator To Current Floor To GO To The First Floor
+
+SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
+
+    While ((Current-Floor - Best-Elevator-Position) > Or = 0) DO      //Example: 10-1 > 0 Or 1-1 = 0  
+        Move Up
+        REPEAT
+            Incriment Floor
+        UNTIL Current-Floor = Best-Elevator-Position
+    END WHILE
+
+    While ((Current-Floor - Best-Elevator-Position) < 0) DO                //Example: -1-1 < 0
+        Move Down
+        REPEAT
+            Dicriment Floor
+        UNTIL Current-Floor = Best-Elevator-Position
+    END WHILE
+
+END SEQUENCE
+
+
+// Logic to Move Best Elevator To Destination
+
 SEQUENCE Move-Elevator-To-Destination USING First-Floor AND Demand-Floor
 
-    
+    While ((First-Floor - Best-Elevator-Floor) > Or = 0) DO            //Example: 10-1 > 0 Or 1-1 = 0 
+        Move Up
+        REPEAT
+            Incriment Floor
+        UNTIL First-Floor = Best-Elevator-Position
+    END WHILE
+
+    While ((First-Floor - Best-Elevator-Position) < 0) DO              //Example: -1-1 < 0
+        Move Down
+        REPEAT
+            Dicriment Floor
+        UNTIL First-Floor = Best-Elevator-Position
+    END WHILE
+
 END SEQUENCE
 
 
@@ -180,7 +278,7 @@ SEQUENCE Open-Doors USING Time AND Barrier
 END SEQUENCE
 
 
-//  ------------------------------------------------------  MAIN PROGRAM  ---------------------------------------------------------
+//  ----------------------------------------------------- 3- MAIN PROGRAM  ---------------------------------------------------------
 //  --------------------------------------------------  SEQUENCES ARE ORDERED BY LOGIC ORDER  -------------------------------------
 
 // When User push the Request-Floor-Button From Outside Elevator (From A Panel Fixed Outside The Elevators Without USING A Call-Button)
@@ -191,32 +289,36 @@ SEQUENCE Request-Floor         USING      Demand-Floor
     CALL Find-Best-Column                 WITH  Demand-Floor
     CALL Find-Best-Elevator               WITH  Best-Column  // (Returned By Find-Best-Column)
     CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
-    CALL Move-Elevator-To-First-Floor     WITH  Best-Elevator                                
+    CALL Move-Elevator-To-First-Floor     WITH  Best-Elevator-Position   // Attribute Of Best-Elevator                               
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
-    CALL Check-Weight                     WITH  Weight        // If Weight > 1200KG Display: Weight is exceeding the capacity of elevator
+    CALL Check-Weight                     WITH  Weight        // If Weight >= 2000KG Display: Weight is exceeding the capacity of elevator
     CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
-    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
+    CALL Move-Elevator-To-Destination     WITH  First-Floor AND Demand-Floor
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
 
 
-// When User push the Call-Button From Outside Elevator To Go To The First Floor (RC)
+// When User Push the Call-Button From Outside Elevator To Go To The First Floor (RC)
+// By Pushing Call-Button The Following Informations Will Be Known: Current-Floor AND Column-N AND Direction
 
-SEQUENCE Request-First-Floor    USING     Call-Button
+SEQUENCE Request-First-Floor    USING     Current-Floor AND Column-N AND Direction:Down
     
-    CALL Find-Best-Column                 WITH  Demand-Floor
-    CALL Find-Best-Elevator               WITH  Demand-Floor AND Best-Column // (Returned By Find-Best-Column)
+    CALL Find-Best-Elevator-Down          WITH  Current-Floor AND Column-N AND Direction:Down
     CALL Check-Alarm-Status               WITH  Alarm-Status // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
     CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
     CALL Check-Weight                     WITH  Weight
     CALL Check-Alarm-Status               WITH  Alarm-Status
     CALL Close-Doors                      WITH  Waiting-Time AND Barrier                                     
-    CALL Move-Elevator-To-Destination     WITH  Current-Floor AND Demand-Floor
+    CALL Move-Elevator-To-First-Floor     WITH  Current-Floor AND Demand-Floor
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
 END SEQUENCE
+
+
+//------------------------------------------------- 4- TESTING PROGRAM  -----------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
 
 

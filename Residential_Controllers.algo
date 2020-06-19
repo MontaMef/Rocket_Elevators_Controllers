@@ -1,12 +1,45 @@
 
+//------------------------------------------------- BRIEF DESCRIPTION / SUMMARY / NOTES -------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+// BRIEF DESCRIPTION:
+
+This algorithm is built to serve users of elevators in Residential building. The following text 
+explains this concept:
+In each floor there is a Call-Button fixed outside elevators, conatains two options UP or DOWN, allowing user to request the best 
+available elevator. Inside each elevator there is a panel allowing user to choose the demand floor. In our case the building conatins 
+10 floors. There is only one column which operates two elevators (elavator-1 and elevator-2).
+To go back or to move to another floor, user follows alawyas the same procedure.
+
+
+// SUMMARY:
+
+1- SEQUENCES OF ADDITIONAL REQUIREMENTS
+2- SEQUENCES OF ESSENTIALS REQUIREMENTS
+3- MAIN PROGRAM 
+4- TESTING PROGRAM
+
+
+// NOTES:
+
+Attributes:
+Elevator-N-Position is an attribute of Elevator-N 
+
+Status:
+Elevator-Status has Four Differents Status: 
+Activ: When it is using by persons
+Inactiv: When It is Not Used. 
+ON SERVICE: If There Is No Problem Detected By Alarm System Of The Building
+OUT OF SERVICE: If THere Is Problems Detected By Alarm System Of The Building
+
+Alarm-Status: It has only two status (It is an alarm of the entire building. So the outputs are considered as entries in this algorithm)
+Problem: Whwn alarm detects problems like fire or seisim ect.
+NoProblem: No problems to be detected
+
+
 --------------------------------------------------- SEQUENCES OF ADDITIONAL REQUIREMENTS --------------------------------------------------
 ------------------------------------------------- SEQUENCES ARE ORDERED BY ALPHABETIC ORDER -----------------------------------------------
 
-// Elevator-Status has Four Differents Status: 
-Activ: When it is using by persons
-Inactiv: When It is Not Used. 
-ON SERVICE: If There Is No Problem Detected
-OUT OF SERVICE: If THere Is Problems Detected 
 
 // Logic To Operate Situation If Alarm System Of The Building Detects Problem. It Has Only Two Status Problem Or NoProblem
 
@@ -86,7 +119,7 @@ SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND ElevatorN-Posit
     Variable Best-Elevator = Elevator1                               
     Variable Best-Distance = |Elevator1-Position  -  Current-Floor|
     
-    FOR EACH Elevator IN Elevators
+    FOR EACH Elevator IN Column
         IF ( |Elevator-Position  -  Current-Floor| < Best-Distance ) 
 
             IF((Elevator is Inactiv) OR (Elevator is Activ AND Same Direction))
@@ -100,7 +133,8 @@ SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND ElevatorN-Posit
 
     END FOR
 
-    Return Best-Elevator
+    Variable Best-Elevator-Position = Best-Elevator Postion
+    Return Best-Elevator, Best-Elevator Postion     // Elevator Attribute
 
 END SEQUENCE
 
@@ -169,6 +203,7 @@ END SEQUENCE
 //  --------------------------------------------  SEQUENCES ARE ORDERED BY LOGIC ORDER --------------------------------------------
 
 // When User push the Call-Button.
+// By Pushing Call-Button The Following Informations Will Be Known: Current-Floor AND Direction
 
 SEQUENCE Request-Elevator     USING       Current-Floor AND Direction
     
