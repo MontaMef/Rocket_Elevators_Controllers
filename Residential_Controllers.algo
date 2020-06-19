@@ -46,7 +46,7 @@ NoProblem: No problems to be detected
 SEQUENCE Check-Alarm-Status  USING Alarm-Status
     
     Variable Elevator-Status = ON SERVICE
-    WHILE( Alarm-Status:Problems )DO
+    WHILE( Alarm-Status:Problem )DO
         Set Elevator-Status = OUT OF SERVICE
         CALL Open-Door
         Display = "OUT OF SERVICE"
@@ -71,20 +71,21 @@ END SEQUENCE
 
 
 // Logic Back TO The Origin: Original Place Of Elevators According To Two Parameters DayTime And Days.
+//Inactiv-time = Time while elevator is on service and is not using by anyone
 
 SEQUENCE Position-Elevator-By-Default USING Time AND Days AND NbrFloors
 
-    WHILE (DayTime between 06:00 to 11:00  and Days between Monday to Saturday) DO
+    WHILE (DayTime between 06:00 to 11:00  and Days between Monday to Saturday and Inactiv-time >10 min) DO
         SET Elevator1-Position = Round Down(NbrFloors x 1/4) = Round Down(10 x 1/4) = 2nd Floor
         SET Elevator2-Position = Round Down(NbrFloors x 3/4) = Round Down(10x 3/4) = 7th Floor
     END WHILE
 
-    WHILE (DayTime between 11:01 to 05:59  and Days between Monday to Saturday) DO
+    WHILE (DayTime between 11:01 to 05:59  and Days between Monday to Saturday and Inactiv-time >10 min) DO
         SET Elevator1-Position = 1st Floor
         SET Elevator2-Position = Round Down(NbrFloors x 1/2) = Round Down(10x 1/2) = 5th Floor
     END WHILE
 
-    WHILE (Day is Sunday) DO
+    WHILE (Day is Sunday and Inactiv-time >10 min ) DO
         SET Elevator1-Position = 1st Floor
         SET Elevator2-Position = Round UP(NbrFloors x 1/2) = Round UP(10x 1/2) = 5th Floor
     END WHILE
@@ -114,18 +115,20 @@ END SEQUENCE
 
 SEQUENCE Find-Best-Elevator USING CurrentFloor AND Direction AND ElevatorN-Position
     
-    //  Suppose Initially That The Best Elevator is Elevator1
+    Variable ARRAY Column = Elevator-1 to Elevator-N                         // In our case Elevator-1 and Elevator-2 
 
-    Variable Best-Elevator = Elevator1                               
-    Variable Best-Distance = |Elevator1-Position  -  Current-Floor|
+    // Suppose Initially That The Best Elevator is Elevator-1
+
+    Variable Best-Elevator = Elevator-1                               
+    Variable Best-Distance = |Elevator-1-Position  -  Current-Floor|
     
-    FOR EACH Elevator IN Column
-        IF ( |Elevator-Position  -  Current-Floor| < Best-Distance ) 
+    FOR EACH Elevator-N IN Column
+        IF ( |Elevator-N-Position  -  Current-Floor| < Best-Distance ) 
 
-            IF((Elevator is Inactiv) OR (Elevator is Activ AND Same Direction))
+            IF((Elevator-N is Inactiv) OR (Elevator-N is Activ AND Same Direction))
                 
-                Best-Elevator = Elevator
-                Best-Distance = |Elevator-Position - Current-Floor|
+                Best-Elevator = Elevator-N
+                Best-Distance = |Elevator-N-Position - Current-Floor|
 
             END IF
           
@@ -143,19 +146,19 @@ END SEQUENCE
 
 SEQUENCE Move-Elevator-To-CurrentFloor USING Current-Floor AND Best-Elevator-Position
 
-    Initial Elevator-Postion = Best-Elevator-Position
-    While ((Current-Floor - Elevator-Position) > 0) DO
+    
+    While ((Current-Floor - Best-Elevator-Position) > 0) DO  // Example 5-2 > 0
         Move Up
         REPEAT
             Incriment Floor
-        UNTIL Current-Floor =Elevator-Position
+        UNTIL Current-Floor = Best-Elevator-Position
     END WHILE
 
-    While ((Current-Floor - Elevator-Position) < 0) DO
+    While ((Current-Floor - Best-Elevator-Position) < 0) DO  // Example 3-6 < 0
         Move Down
         REPEAT
             Dicriment Floor
-        UNTIL Current-Floor =Elevator-Position
+        UNTIL Current-Floor = Best-Elevator-Position
     END WHILE
 
 END SEQUENCE
@@ -165,19 +168,19 @@ END SEQUENCE
 
 SEQUENCE Move-Elevator-To-Destination USING Current-Floor AND Demand-Floor
 
-    Initial Elevator-Postion = Current-Floor
-    While ((Demand-Floor - Elevator-Postion) > 0) DO
+    
+    While ((Demand-Floor - Current-Floor) > 0) DO
         Move Up
         REPEAT
             Incriment Floor
-        UNTIL Demand-Floor =Elevator-Position
+        UNTIL Demand-Floor = Current-Floor
     END WHILE
 
-    While ((Demand-Floor - Elevator-Position) < 0) DO
+    While ((Demand-Floor - Current-Floor) < 0) DO
         Move Down
         REPEAT
             Dicriment Floor
-        UNTIL Demand-Floor =Elevator-Position
+        UNTIL Demand-Floor = Current-Floor
     END WHILE
 
 END SEQUENCE
@@ -207,8 +210,8 @@ END SEQUENCE
 
 SEQUENCE Request-Elevator     USING       Current-Floor AND Direction
     
-    CALL Find-Best-Elevator               WITH  CurrentFloor AND Direction And Elevator-Position  
-    CALL Check-Alarm-Status               WITH  Alarm-Status
+    CALL Find-Best-Elevator               WITH  Current-Floor AND Direction 
+    CALL Check-Alarm-Status               WITH  Alarm-Status  // Alarm System Of The Building. It Has Only Two Status Problem Or NoProblem
     CALL Move-Elevator-To-CurrentFloor    WITH  Current-Floor AND Elevator-Position                                
     CALL Open-Doors                       WITH  Waiting-Time AND Barrier 
 
@@ -232,14 +235,14 @@ END SEQUENCE
 -----------------------------------------------------------------------------------------------------------------------------------
 
 
-// Scenario 1: With elevator 1 Idle at floor 2 and elevator 2  Idle at floor 6, someone is on floor 3 and requests the 7th floor, 
-elevator 1 is expected to be sent.
+// Scenario 1: With elevator-1 Idle (Inactiv) at floor 2 and elevator-2  Idle at floor 6, someone is on floor 3 and requests 
+the 7th floor, elevator-1 is expected to be sent.
 
-SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = UP AND Elevator-Position: Elevator1= 2 Idle Elevator2= 6 Idl
+SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = UP 
     
-    CALL Find-Best-Elevator               Result:  Elevator1
+    CALL Find-Best-Elevator               Result:  Elevator-1
     CALL Alarm-Status                     Result:  Elevator-Status = On Service (Supposed)
-    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator1 Move From Floor 2 To Floor 3                              
+    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator-1 Move From Floor 2 To Floor 3                              
     CALL Open-Doors                       Result:  Open Doors And Close them After 7 sec (No Barriers)
 
 END SEQUENCE
@@ -249,59 +252,127 @@ SEQUENCE Request-Floor        USING       Demand-Floor = 7 AND  Current-Floor = 
     CALL Check-Weight                     Result: < 1200 KG (Supposed)
     CALL Check-Alarm-Status               Result: On Service (Supposed)
     CALL Close-Doors                      Result: Close Doors After 7 sec (No Barriers)                                  
-    CALL Move-Elevator-To-Destination     Result: Elevator1 Move From Floor 3 to Floor 7
+    CALL Move-Elevator-To-Destination     Result: Elevator-1 Move From Floor 3 to Floor 7
     CALL Open-Doors                       Result: Open Doors And Close them After 7 sec (No Barriers)
 
 END SEQUENCE
 
 
+----------------------------------------------------------------------------------------------------------------------------------
+// Scenario 2: With elevator-1 idle (Inactiv) at floor 10 and elevator-2 idle at floor 3, someone is on the 1st floor and requests
+ the 6th floor, elevator-2 should be sent. 
+2 minutes later, someone else is on the 3rd floor and requests the 5th floor. Elevator-2 should be sent.
+Finally, a third person is on floor 9 and wants to go down to the 2nd floor. Elevator-1 should be sent
 
-// Scenario 2: With elevator 1 idle at floor 10 and elevator 2 idle at floor 3, someone is on the 1st floor and requests the 6th floor, 
-elevator 2 should be sent. 
-2 minutes later, someone else is on the 3rd floor and requests the 5th floor. Elevator 2 should be sent.
-Finally, a third person is on floor 9 and wants to go down to the 2nd floor. Elevator 1 should be sent
 
-
-SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = UP AND Elevator-Position: Elevator1= 2 Idle Elevator2= 6 Idl
+SEQUENCE Request-Elevator     USING       Current-Floor = 1 AND Direction = UP 
     
-    CALL Find-Best-Elevator               Result:  Elevator1
+    CALL Find-Best-Elevator               Result:  Elevator-2
     CALL Alarm-Status                     Result:  Elevator-Status = On Service (Supposed)
-    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator1 Move From Floor 2 To Floor 3                              
+    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator-2 Move From Floor 3 To Floor 1                             
     CALL Open-Doors                       Result:  Open Doors And Close them After 7 sec (No Barriers)
 
 END SEQUENCE
 
-SEQUENCE Request-Floor        USING       Demand-Floor = 7 AND  Current-Floor = 3           
+SEQUENCE Request-Floor        USING       Demand-Floor = 6 AND  Current-Floor = 1          
     
     CALL Check-Weight                     Result: < 1200 KG (Supposed)
     CALL Check-Alarm-Status               Result: On Service (Supposed)
     CALL Close-Doors                      Result: Close Doors After 7 sec (No Barriers)                                  
-    CALL Move-Elevator-To-Destination     Result: Elevator1 Move From Floor 3 to Floor 7
+    CALL Move-Elevator-To-Destination     Result: Elevator-2 Move From Floor 1 to Floor 6
     CALL Open-Doors                       Result: Open Doors And Close them After 7 sec (No Barriers)
 
 END SEQUENCE
 
 
+// Scenario 2: 2 min later - Second person ------------------------------------------------------------------------------------------
 
-// Scenario 3: With elevator 1 idle at floor 10 and elevator 2 moving from floor 3 to floor 6, someone is on floor 3 and 
-requests the 2nd floor. Elevator 1 should be sent. 
-5 minutes later, someone else is on the 10th floor and wants to go down to the 3rd floor. Elevator 2 should be sent.
-
-SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = UP AND Elevator-Position: Elevator1= 2 Idle Elevator2= 6 Idl
+SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = UP 
     
-    CALL Find-Best-Elevator               Result:  Elevator1
+    CALL Find-Best-Elevator               Result:  Elevator-2
     CALL Alarm-Status                     Result:  Elevator-Status = On Service (Supposed)
-    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator1 Move From Floor 2 To Floor 3                              
+    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator-2 Move From Floor 6 To Floor 3                             
     CALL Open-Doors                       Result:  Open Doors And Close them After 7 sec (No Barriers)
 
 END SEQUENCE
 
-SEQUENCE Request-Floor        USING       Demand-Floor = 7 AND  Current-Floor = 3           
+SEQUENCE Request-Floor        USING       Demand-Floor = 5 AND  Current-Floor = 3         
     
     CALL Check-Weight                     Result: < 1200 KG (Supposed)
     CALL Check-Alarm-Status               Result: On Service (Supposed)
     CALL Close-Doors                      Result: Close Doors After 7 sec (No Barriers)                                  
-    CALL Move-Elevator-To-Destination     Result: Elevator1 Move From Floor 3 to Floor 7
+    CALL Move-Elevator-To-Destination     Result: Elevator-2 Move From Floor 3 to Floor 5
     CALL Open-Doors                       Result: Open Doors And Close them After 7 sec (No Barriers)
 
 END SEQUENCE
+
+
+// Scenario 2: Third person ---------------------------------------------------------------------------------------------------------
+
+SEQUENCE Request-Elevator     USING       Current-Floor = 9 AND Direction = DOWN
+    
+    CALL Find-Best-Elevator               Result:  Elevator-1
+    CALL Alarm-Status                     Result:  Elevator-Status = On Service (Supposed)
+    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator-1 Move From Floor 10 To Floor 9                             
+    CALL Open-Doors                       Result:  Open Doors And Close them After 7 sec (No Barriers)
+
+END SEQUENCE
+
+SEQUENCE Request-Floor        USING       Demand-Floor = 2 AND  Current-Floor = 9        
+    
+    CALL Check-Weight                     Result: < 1200 KG (Supposed)
+    CALL Check-Alarm-Status               Result: On Service (Supposed)
+    CALL Close-Doors                      Result: Close Doors After 7 sec (No Barriers)                                  
+    CALL Move-Elevator-To-Destination     Result: Elevator-1 Move From Floor 9 to Floor 2
+    CALL Open-Doors                       Result: Open Doors And Close them After 7 sec (No Barriers)
+
+END SEQUENCE
+
+
+---------------------------------------------------------------------------------------------------------------------------
+// Scenario 3: With elevator-1 idle (Inactiv) at floor 10 and elevator-2 moving from floor 3 to floor 6, someone is on floor 3 and 
+requests the 2nd floor. Elevator-1 should be sent. 
+5 minutes later, someone else is on the 10th floor and wants to go down to the 3rd floor. Elevator-2 should be sent.
+
+SEQUENCE Request-Elevator     USING       Current-Floor = 3 AND Direction = DOWN
+    
+    CALL Find-Best-Elevator               Result:  Elevator-1
+    CALL Alarm-Status                     Result:  Elevator-Status = On Service (Supposed)
+    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator-1 Move From Floor 10 To Floor 3                              
+    CALL Open-Doors                       Result:  Open Doors And Close them After 7 sec (No Barriers)
+
+END SEQUENCE
+
+SEQUENCE Request-Floor        USING       Demand-Floor = 2 AND  Current-Floor = 3           
+    
+    CALL Check-Weight                     Result: < 1200 KG (Supposed)
+    CALL Check-Alarm-Status               Result: On Service (Supposed)
+    CALL Close-Doors                      Result: Close Doors After 7 sec (No Barriers)                                  
+    CALL Move-Elevator-To-Destination     Result: Elevator-1 Move From Floor 3 to Floor 2
+    CALL Open-Doors                       Result: Open Doors And Close them After 7 sec (No Barriers)
+
+END SEQUENCE
+
+// Scenario 3: 5 min later - Second person ------------------------------------------------------------------------------------
+
+SEQUENCE Request-Elevator     USING       Current-Floor = 10 AND Direction = DOWN
+    
+    CALL Find-Best-Elevator               Result:  Elevator-2
+    CALL Alarm-Status                     Result:  Elevator-Status = On Service (Supposed)
+    CALL Move-Elevator-To-CurrentFloor    Result:  Elevator-2 Move From Floor 6 To Floor 10                             
+    CALL Open-Doors                       Result:  Open Doors And Close them After 7 sec (No Barriers)
+
+END SEQUENCE
+
+SEQUENCE Request-Floor        USING       Demand-Floor = 3 AND  Current-Floor = 10         
+    
+    CALL Check-Weight                     Result: < 1200 KG (Supposed)
+    CALL Check-Alarm-Status               Result: On Service (Supposed)
+    CALL Close-Doors                      Result: Close Doors After 7 sec (No Barriers)                                  
+    CALL Move-Elevator-To-Destination     Result: Elevator-2 Move From Floor 10 to Floor 3
+    CALL Open-Doors                       Result: Open Doors And Close them After 7 sec (No Barriers)
+
+END SEQUENCE
+
+
+------------------------------------------------------------  END  ----------------------------------------------------------
