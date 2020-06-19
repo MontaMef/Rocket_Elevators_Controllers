@@ -1,12 +1,12 @@
 # Rocket_Elevators_Controllers
 
-Odyssey Program /
-Week 1 - Algorithms and Problem Solving /
-This project is formed by the following documents: /
-ReadME (The current document) /
-Commercial_Controllers(Modern Solution).algo /
-Commercial_Controllers(Classic Solution).algo /
-Residential_Controllers.algo
+// Odyssey Program 
+// Week 1 - Algorithms and Problem Solving 
+// This project is formed by the following documents: 
+// ReadME (The current document) 
+// Commercial_Controllers(Modern Solution).algo 
+// Commercial_Controllers(Classic Solution).algo 
+// Residential_Controllers.algo
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,6 +29,19 @@ Instead, it serves only between first floor and demand floor or between current 
 
 # Commercial_Controllers(Classic Solution).algo
 
+/ BRIEF DESCRIPTION:
+
+This algorithm is based on CLASSIC SOLUTION to serve users of elevators in Commercial and Corporate buildings. The following text 
+explains this concept:
+The distribution of 12 elevators are done in 4 Columns. Each Column contains 3 elevators and each one serves an equal 
+number of floors (excluding the first column wich serves only to go to the basement floors). For example, if someone want to go from 
+first floor to floor 35. He should take an elevator from RC to 20th floor and than from 20th floor to floor nbr 35. Each column 
+serves only 20 floors and only column-1 and column-2 had access to first floor
+
+Advantage: Distribute the service of floors between cloumns
+Disadvantage: This algorithm does not allow users to use only one elevator to reach floors higher then 20.
+They should take more than one elevator. It is not good choice for many poeple.
+
 # Residential_Controllers.algo
 
 // BRIEF DESCRIPTION:
@@ -43,12 +56,12 @@ To go back or to move to another floor, user follows alawyas the same procedure.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 # SUMMARY
-Each algorithm conatins the following summary
+// Each algorithm conatins the following summary
 
-1- SEQUENCES OF ADDITIONAL REQUIREMENTS /
-2- SEQUENCES OF ESSENTIALS REQUIREMENTS/
-3- MAIN PROGRAM /
-4- TESTING PROGRAM /
+// 1- SEQUENCES OF ADDITIONAL REQUIREMENTS 
+// 2- SEQUENCES OF ESSENTIALS REQUIREMENTS
+// 3- MAIN PROGRAM 
+// 4- TESTING PROGRAM 
 
 
 
