@@ -55,22 +55,22 @@ SEQUENCE Close-Doors USING Time AND Barrier
 END SEQUENCE
 
 
+
+
 // Logic To Choose The Right Column To Serve User.
 
 SEQUENCE Find-Best-Column USING Demand-Floor
 
-    Variable ARRAY Column-1 = 1, -1 To -N       
-    // In Our Case 1, -1 To -6. This Column Serves Users To Reach Basements
-    // For Mthematic Reasons, I replaced B1 By -1 Until B6 By -6
+    Variable ARRAY Column-1 = 1, B1 To BN       // In Our Case 1, B1 To B6 -- This Column Serves Users To Reach Basements
 
     Variable Nbr-Column = 3                     // Given By Requirements For The Commercial Controller
 
     // The Following Calculations Helps To Know The Number Of Floors To Be Served By Each Column
 
     Variable Nbr-Floor-Served-By-Column = (Nbr-Floor  -  Nbr-Basement-Floor) / Nbr-Column        
-    // In Our Case 20 Floors Per Column, (66-6)/3 = 20
+    // In Our Case 20 Floors Per Column
 
-    // The Following Arrays Contains Floors To Be Served By Each Column (Excluding Basements)
+    // The Following Arrays Contains Floors To Be Served By Columns (Excluding Basements)
 
     Variable ARRAY Column-2 = 1  To  Value OF Nbr-Floor-Served-By-Column    
     // In Our Case 1 To 20
@@ -132,35 +132,6 @@ SEQUENCE Find-Best-Elevator USING Best-Column AND ElevatorN-Position
     END FOR
 
     RETURN Best-Elevator
-
-END SEQUENCE
-
-
-SEQUENCE Move-Elevator-To-Destination USING First-Floor AND Demand-Floor
-
-    
-END SEQUENCE
-
-
-SEQUENCE  Move-Elevator-To-First-Floor  USING  Best-Elevator
-
-    
-     While ((First-Floor - Best-Elevator-Position) > 0) DO   // Example: 1 - (-1) > 0
-        Move Up
-        REPEAT
-        Incriment Floor
-        UNTIL First-Floor =Best-Elevator-Position
-    
-    END WHILE
-    
-    While ((First-Floor - Best-Elevator-Position) < 0) DO    // Example: 1 - 10 < 0
-        Move Down
-        REPEAT
-            Dicriment Floor
-        UNTIL First-Floor =Best-Elevator-Position
-
-    END WHILE
-
 END SEQUENCE
 
 
