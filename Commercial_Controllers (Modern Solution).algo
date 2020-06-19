@@ -332,24 +332,23 @@ going to 15th, B3 at 13th floor going to 1st, B4 at 15th floor going to 2nd, and
 and requests the 20th floor, elevator B5 is expected to be sent
 
 Distribution Of Floors And Elevators By Columns: 1 = RC
-Column-1 (A)  FLOORS (-1, -2, -3, -4, -5, -6)     ELEVATORS (1, 2, 3)        (A1, A2, A3)
-Column-2 (B)  FLOORS (1 to 20)                    ELEVATORS (4, 5, 6)        (B4, B5, B6)
-Column-3 (C)  FLOORS (1, 21 to 40)                ELEVATORS (7, 8, 9)        (C7, C8, C9)
-Column-4 (D)  FLOORS (1, 41 to 60)                ELEVATORS (10, 11, 12)     (C10, C11, C12)
+
+Column-2 (B)  FLOORS (1 to 20)                    ELEVATORS (B1, B2, B3, B4, B5)
+
 
 
 SEQUENCE Request-Floor         USING      Demand-Floor = 20
     
     CALL Find-Best-Column                      Result Column-2 (B)
-    CALL Find-Best-Elevator                    Result 
-    CALL Check-Alarm-Status                    Result
-    CALL Move-Elevator-To-First-Floor          Result                          
-    CALL Open-Doors                            Result
-    CALL Check-Weight                          Result
-    CALL Check-Alarm-Status                    Result
-    CALL Close-Doors                           Result                             
-    CALL Move-Elevator-To-Destination          Result
-    CALL Open-Doors                            Result
+    CALL Find-Best-Elevator                    Result B5
+    CALL Check-Alarm-Status                    Result ok
+    CALL Move-Elevator-To-First-Floor          Result B5 Move From 6th Floor To 1st Floor                      
+    CALL Open-Doors                            Result ok
+    CALL Check-Weight                          Result ok
+    CALL Check-Alarm-Status                    Result ok
+    CALL Close-Doors                           Result ok                           
+    CALL Move-Elevator-To-Destination          Result B5 Move From 1st Floor To 20th Floor
+    CALL Open-Doors                            Result ok
 
 END SEQUENCE
 
@@ -359,10 +358,8 @@ C2 at 23st floor going to 28th, C3 at 33rd floor going to 1st, C4 at 40th floor 
 someone is at 1st floor and requests the 36th floor, elevator C1 is expected to be sent
 
 Distribution Of Floors And Elevators By Columns: 1 = RC
-Column-1 (A)  FLOORS (-1, -2, -3, -4, -5, -6)     ELEVATORS (1, 2, 3)        (A1, A2, A3)
-Column-2 (B)  FLOORS (1 to 20)                    ELEVATORS (4, 5, 6)        (B1, B2, B3)
-Column-3 (C)  FLOORS (1, 21 to 40)                ELEVATORS (7, 8, 9)        (C1, C2, C3)
-Column-4 (D)  FLOORS (1, 41 to 60)                ELEVATORS (10, 11, 12)     (D1, D2, D3)
+
+Column-3 (C)  FLOORS (1, 21 to 40)                ELEVATORS (C1, C2, C3, C4, C5)
 
 SEQUENCE Request-Floor         USING      Demand-Floor = 36
     
@@ -378,3 +375,5 @@ SEQUENCE Request-Floor         USING      Demand-Floor = 36
     CALL Open-Doors                            Result  ok
 
 END SEQUENCE
+
+-------------------------------------------------- END --------------------------------------------------------------------------------

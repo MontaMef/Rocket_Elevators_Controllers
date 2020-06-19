@@ -224,21 +224,29 @@ END SEQUENCE
 going to 15th, B3 at 13th floor going to 1st, B4 at 15th floor going to 2nd, and B5 at 6th floor going to 1st, someone is at 1st floor
 and requests the 20th floor, elevator B5 is expected to be sent
 
-Column-1 (A)   FLOORS (-1, -2, -3, -4, -5, -6)    ELEVATORS (1, 2, 3)          (A1, A2, A3)
-Column-2 (B)   FLOORS (1 to 20)                   ELEVATORS (4, 5, 6)          (B1, B2, B3)
-Column-3 (C)   FLOORS (20 to 40)                  ELEVATORS (7, 8, 9)          (C1, C2, C3)
-Column-4 (D)   FLOORS (40 to 60)                  ELEVATORS (10, 11, 12)       (D1, D2, D3)
+
+Column-2 (B)   FLOORS (1 to 20)                   ELEVATORS B1, B2, B3, B4, B5)
+
+SEQUENCE Request-Elevator     USING       Current-Floor = 1 AND Direction = UP
+    
+    CALL Find-Best-Elevator               Result:  B5
+    CALL Alarm-Status                     Result:  ok
+    CALL Move-Elevator-To-CurrentFloor    Result:  B5 Move From 6th Floor To 1st Floor                            
+    CALL Open-Doors                       Result:  Ok
+
+END SEQUENCE
+
+SEQUENCE Request-Floor        USING       Demand-Floor = 20 AND  Current-Floor = 1         
+    
+    CALL Check-Weight                     Result: ok
+    CALL Check-Alarm-Status               Result: ok
+    CALL Close-Doors                      Result: ok                            
+    CALL Move-Elevator-To-Destination     Result: B5 Move From 1st Floor to 20th Floor
+    CALL Open-Doors                       Result: ok
 
 
-//Scenario 2: With third column (or column C) serving floors from 21 to 40, with elevator C1 at 1st floor going to 21th, C2 at 23st 
-floor going to 28th, C3 at 33rd floor going to 1st, C4 at 40th floor going to 24th, and C5 at 39nd floor going to 1st, 
-someone is at 1st floor and requests the 36th floor, elevator C1 is expected to be sent
 
-Column-1 (A)   FLOORS (-1, -2, -3, -4, -5, -6)    ELEVATORS (1, 2, 3)          (A1, A2, A3)
-Column-2 (B)   FLOORS (1 to 20)                   ELEVATORS (4, 5, 6)          (B1, B2, B3)
-Column-3 (C)   FLOORS (20 to 40)                  ELEVATORS (7, 8, 9)          (C1, C2, C3)
-Column-4 (D)   FLOORS (40 to 60)                  ELEVATORS (10, 11, 12)       (D1, D2, D3)
-
+------------------------------------------------------------ END ------------------------------------------------------------------
 
 
 
