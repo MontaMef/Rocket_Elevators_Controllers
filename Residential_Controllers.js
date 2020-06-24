@@ -22,7 +22,7 @@ class Elevator {                                                    //Constructo
         this.status = ["Active", "Inactive", "On Service", "Out Of Service"];
         this.weight = function () {
             if (weight >= 1200) {
-                Text("Weight is exceeding the capacity of elevator", 10, 10);
+                console.log("Weight is exceeding the capacity of elevator", 10, 10);
                 status = "Out Of Service";
             }
         },
@@ -64,7 +64,9 @@ var MyColumn = new Column ([Elevator1,Elevator2],"NoProblem");
 
 
 
-//  Functions: // Functions will be later regrouped under two classes RequestElevator AND RequestFloor
+//  Functions: // Functions will be later regrouped under two classes or Sections RequestElevator AND RequestFloor
+
+// The Following Functions will be classified under RequestElevator Class Or Section:
 
 function FindBestElevator(CurrentFloor,Direction){
     var BestElevator = MyColumn.Elevator[0];
@@ -79,29 +81,64 @@ function FindBestElevator(CurrentFloor,Direction){
         };
     };
     console.log("The Best Elevator Is: ",BestElevator.id + 1);
-    return BestElevator, BestDistance;
+    console.log("The Best Distance Is: ",BestDistance );
+    return BestElevator;
     
 }
 
 function CheckAlarmStatus (){
-    
+    while(MyColumn.alarm === "Problem"){
+        BestElevator.status === "Out Of Service";
+        log.console("Elevator Is Out Of Service");
+    }
 }
 
-// Main program
+function MoveToCurrentFloor(BestElevator){
+   
+    while((CurrentFloor-BestElevator.postion) > 0){
+        BestElevator.postion++;  
+    }
 
-//var CurrentFloor = prompt("Enter please the Current Floor:");
-//var Direction = prompt("Enter the direction of your destination (Up Or Down):");
-//RequestFloor (CurrentFloor, Direction);
+    while((CurrentFloor-BestElevator.postion) < 0){
+        BestElevator.postion--; 
+    } 
 
-//var RequestFloor = prompt("Enter the request Floor (1 to 10 ):");
-//RequestElevator (CurrentFloor,RequestFloor);
+    BestElevator.Doors ===  "Opened";
+    console.log("The New Position Of Best Elevator Is:",BestElevator.postion);
+}
+
+//The Following Functions will be classified under RequestFloor Class Or Section:
+
+function CheckWeight(BestElevator){
+
+    if (BestElevator.weight >= 1200) {
+        console.log("Weight is exceeding the capacity of elevator", 10, 10);
+        status = "Out Of Service";
+    }
+
+}
+
+function MoveToDistination (CurrentFloor,Destination){
+
+    if((Destination - CurrentFloor) > 0){
+        BestElevator.postion++;  
+    }
+
+    if((Destination - CurrentFloor) < 0){
+        BestElevator.postion--;  
+    }
+
+    console.log("The Best Elevator reaches the Demand Floor:",BestElevator.position);
+}
+
+
+
+
+
+
 
 
 //Test Program
-
-
-
-
 
 console.log(FindBestElevator(0,"UP"));
 
