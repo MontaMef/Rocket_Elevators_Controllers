@@ -22,7 +22,7 @@ class Elevator {                                                    //Constructo
         this.status = ["Active", "Inactive", "On Service", "Out Of Service"];
         this.weight = function () {
             if (weight >= 1200) {
-                console.log("Weight is exceeding the capacity of elevator", 10, 10);
+                console.log("Weight is exceeding the capacity of elevator");
                 status = "Out Of Service";
             }
         },
@@ -72,16 +72,31 @@ function FindBestElevator(CurrentFloor,Direction){
     var BestElevator = MyColumn.Elevator[0];
     var BestDistance = Math.abs(MyColumn.Elevator[0].position - CurrentFloor);
     for (var i=1; i<MyColumn.Elevator.length; i++  ){
+        
         if(Math.abs(MyColumn.Elevator[i].position - CurrentFloor)<BestDistance){
-            if((MyColumn.Elevator[i].status === "Inactive") ||(MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction === Direction ) ){
+            
+            if(MyColumn.Elevator[i].position < CurrentFloor ){
+                
+                if((MyColumn.Elevator[i].status === "Inactive") ||(MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction === Direction ) ){
 
-                BestElevator = MyColumn.Elevator[i];
-                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                    BestElevator = MyColumn.Elevator[i];
+                    BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                }
             }
+            if(MyColumn.Elevator[i].position > CurrentFloor ){
+                
+                if((MyColumn.Elevator[i].status === "Inactive") ||(MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction != Direction ) ){
+
+                    BestElevator = MyColumn.Elevator[i];
+                    BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                }
+            } 
         };
     };
-    console.log("The Best Elevator Is: ",BestElevator.id + 1);
-    console.log("The Best Distance Is: ",BestDistance );
+    
+    console.log("The Best Elevator Is:",BestElevator.id + 1);
+    console.log("The Best Elevator Position:",BestElevator.position,"Floor(s)");
+    console.log("The Best Distance Is:",BestDistance,"Level(s)");
     return BestElevator;
     
 }
@@ -109,31 +124,21 @@ function MoveToCurrentFloor(BestElevator){
 
 //The Following Functions will be classified under RequestFloor Class Or Section:
 
-function CheckWeight(BestElevator){
 
-    if (BestElevator.weight >= 1200) {
-        console.log("Weight is exceeding the capacity of elevator", 10, 10);
-        status = "Out Of Service";
-    }
 
-}
-
-function MoveToDistination (CurrentFloor,Destination){
+function MoveToDistination (CurrentFloor,Destination,BestElevator){
 
     if((Destination - CurrentFloor) > 0){
-        BestElevator.postion++;  
+        BestElevator.position++;  
     }
 
     if((Destination - CurrentFloor) < 0){
-        BestElevator.postion--;  
+        BestElevator.position--;  
     }
 
+    BestElevator.doors = "Opened";
     console.log("The Best Elevator reaches the Demand Floor:",BestElevator.position);
 }
-
-
-
-
 
 
 
@@ -141,4 +146,5 @@ function MoveToDistination (CurrentFloor,Destination){
 //Test Program
 
 console.log(FindBestElevator(0,"UP"));
+//console.log(MoveToDistination (0,7));
 
