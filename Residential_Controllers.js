@@ -55,96 +55,108 @@ class Column {                          //Constructor
 }
 
 
-//--------------------------------------------------------------- MAIN PROGRAM ------------------------------------------------------------
+//----------------------------------------------------------------FUNCTIONS----------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-// Initial Condition Og A Global Variable:
+// Initial Condition Of A Global Variable:
 
 var BestElevator = new Elevator;
 
-// Method 1: RequestElevator: Using: CurrentFloor And Direction.
- 
-function RequestElevator(CurrentFloor,Direction) {
+// Find The Best Elevator Function
+
+function FindBestElevator(CurrentFloor,Direction){
 
     BestElevator = MyColumn.Elevator[0];
-var BestDistance = Math.abs(MyColumn.Elevator[0].position - CurrentFloor);
-for (var i=1; i<MyColumn.Elevator.length; i++  ){
-    
-    if(MyColumn.Elevator[i].status === "Active" && BestElevator.status === "Inactive"){
-        BestElevator = MyColumn.Elevator[i];
-        BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
-    }
-    
-    else if((Math.abs(MyColumn.Elevator[i].position - CurrentFloor)<BestDistance)){
+    var BestDistance = Math.abs(MyColumn.Elevator[0].position - CurrentFloor);
+    for (var i=1; i<MyColumn.Elevator.length; i++  ){
         
-        if(MyColumn.Elevator[i].status === "Inactive"  &&  BestElevator.status === "Inactive") {
+        if(MyColumn.Elevator[i].status === "Active" && BestElevator.status === "Inactive"){
             BestElevator = MyColumn.Elevator[i];
             BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+        }
+        
+        else if((Math.abs(MyColumn.Elevator[i].position - CurrentFloor)<BestDistance)){
             
-        }
-        if((MyColumn.Elevator[i].status === "Active"  &&  BestElevator.status === "Active")  &&  (MyColumn.Elevator[i].position < CurrentFloor && Direction === "UP") || (MyColumn.Elevator[i].position > CurrentFloor && Direction === "DOWN")){
+            if(MyColumn.Elevator[i].status === "Inactive"  &&  BestElevator.status === "Inactive") {
+                BestElevator = MyColumn.Elevator[i];
+                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                
+            }
+            if((MyColumn.Elevator[i].status === "Active"  &&  BestElevator.status === "Active")  &&  (MyColumn.Elevator[i].position < CurrentFloor && Direction === "UP") || (MyColumn.Elevator[i].position > CurrentFloor && Direction === "DOWN")){
 
-            BestElevator = MyColumn.Elevator[i];
-            BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                BestElevator = MyColumn.Elevator[i];
+                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+            }
         }
+
+        
+        if( CurrentFloor === 1 ){
+                
+            if((MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction != Direction ) || (MyColumn.Elevator[i].status === "Inactive") ){
+
+                BestElevator = MyColumn.Elevator[i];
+                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+            }
+        }  
     }
 
-    
-    if( CurrentFloor === 1 ){
-            
-        if((MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction != Direction ) || (MyColumn.Elevator[i].status === "Inactive") ){
-
-            BestElevator = MyColumn.Elevator[i];
-            BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
-        }
-    } 
-    
-    
-};
     console.log("");
     console.log("RESULTS OF",Scenario,":");
     console.log("   The Best Elevator Is:",BestElevator.id + 1,".");
     console.log("   The Best Elevator Position: Floor",BestElevator.position);
     console.log("   The Best Distance Is:",BestDistance,"Level(s).");
+}
 
-   // Check Alarm Status:
-   if(MyColumn.alarm === "Problem"){
+// Check Alarm Status
+
+function CheckAlarm (MyColumn){
+   
+    if(MyColumn.alarm === "Problem"){
         BestElevator.status = "Out Of Service";
         log.console("Elevator Is Out Of Service");
         return null;
     }
+}
 
-    // Move Best Elevator To Current Floor
-    while((CurrentFloor-BestElevator.position) > 0){
+
+//Move Best Elevator To Current Floor
+
+function MoveToCurrenFloor(CurrentFloor,BestElevator){
+
+    while((CurrentFloor - BestElevator.position) > 0){
         BestElevator.position ++;
-          
+            
     }
 
-    while((CurrentFloor-BestElevator.position) < 0){
+    while((CurrentFloor - BestElevator.position) < 0){
         BestElevator.position --; 
     } 
 
     BestElevator.Doors =  "OPEN";
     console.log("       STEP 1: The Best Elevator Moves To Current Floor: Floor nbr",BestElevator.position,".");
+        
     
-    return BestElevator.end;        // To Avoid Undefined Return At The End Of RequestElevator And RequestFloor Functions.
+
 }
 
+// Check Elevator Weight
 
-// Method 2: RequestFloor: Using DemandFloor AND CurrentFloor. 
-
-function RequestFloor (CurrentFloor,Destination){
-
-    // Check Weight
+function CheckWeight(BestElevator){
+    
     if (BestElevator.weight >= 1200) {
         console.log("Weight is exceeding the capacity of elevator");
         status = "Out Of Service";
         return null;
+        
     }
-
     BestElevator.Doors = "CLOSE";
+}
 
-    // Move Best Elevator to Destination
+
+//  // Move Best Elevator to Destination
+
+function MoveToDestination(CurrentFloor,Destination){
+    
     while((Destination - CurrentFloor) > 0){
         
         BestElevator.position ++; 
@@ -160,7 +172,34 @@ function RequestFloor (CurrentFloor,Destination){
 
     BestElevator.Doors = "OPEN";
     console.log("       STEP 2: The Best Elevator reaches the Demand Floor:", BestElevator.position );
-    return BestElevator.end;             // To Avoid Undefined Return At The End Of RequestElevator And RequestFloor Functions.
+    
+
+}
+
+//--------------------------------------------------------------- MAIN PROGRAM ------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+// Method 1: RequestElevator: Using: CurrentFloor And Direction.
+ 
+function RequestElevator(CurrentFloor,Direction) {
+    
+    FindBestElevator(CurrentFloor,Direction)
+    CheckAlarm (MyColumn)
+    MoveToCurrenFloor(CurrentFloor,BestElevator)
+    return BestElevator.end;             // To Avoid Undefined Return At The End Of RequestElevator Functions.
+}
+
+
+// Method 2: RequestFloor: Using CurrentFloor AND Destination. 
+
+function RequestFloor (CurrentFloor,Destination){
+
+    CheckWeight(BestElevator)
+    CheckAlarm (MyColumn)
+    MoveToDestination(CurrentFloor,Destination)
+    return BestElevator.end;             // To Avoid Undefined Return At The End Of RequestFloor Functions.
 }
 
 
@@ -238,7 +277,7 @@ console.log(RequestFloor (CurrentFloor,Destination));
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
 // Scenario 3: With elevator-1 idle (Inactiv) at floor 10 and elevator-2 moving from floor 3 to floor 6, someone is on floor 3 and 
-// requests the 2nd floor. Elevator-2 should be sent. 
+// requests the 2nd floor. Elevator-1 should be sent. 
 // 5 minutes later, someone else is on the 10th floor and wants to go down to the 3rd floor. Elevator-2 should be sent.
 
 var Scenario = "SCENARIO 3/A";
