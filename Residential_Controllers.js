@@ -18,22 +18,22 @@ class Elevator {                                                    //Constructo
         this.position = position;
         this.status   = status;
         this.weight   = weight;
-        this.end      = end;
+        this.end      = end;          // To Avoid Undefined Return At The End Of RequestElevator And RequestFloor Functions.
         this.door     = door;
     }
     Elev() {                                                          //Prototype
 
-        this.id = [1, 2];
+        this.id      = [1, 2];
         this.postion = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11];
-        this.status = ["Active", "Inactive", "On Service", "Out Of Service"];
-        this.weight = function () {
+        this.status  = ["Active", "Inactive", "On Service", "Out Of Service"];
+        this.weight  = function () {
             if (weight >= 1200) {
                 console.log("Weight is exceeding the capacity of elevator");
                 status = "Out Of Service";
             }
         }
-        this.end = "END";
-        this.door = ["OPEN","CLOSE"]
+        this.end   = "END";
+        this.door  = ["OPEN","CLOSE"]
 
     }
 
@@ -46,6 +46,7 @@ class Column {                          //Constructor
     constructor(Elevator, alarm) {
         this.Elevator = Elevator;
         this.alarm = alarm;
+
     }
     BuilColumn() {                     //Prototype
         this.Elevator = [Elevator, Elevator];
@@ -126,7 +127,7 @@ for (var i=1; i<MyColumn.Elevator.length; i++  ){
     BestElevator.Doors =  "OPEN";
     console.log("       STEP 1: The Best Elevator Moves To Current Floor: Floor nbr",BestElevator.position,".");
     
-    return BestElevator.end;
+    return BestElevator.end;        // To Avoid Undefined Return At The End Of RequestElevator And RequestFloor Functions.
 }
 
 
@@ -159,8 +160,9 @@ function RequestFloor (CurrentFloor,Destination){
 
     BestElevator.Doors = "OPEN";
     console.log("       STEP 2: The Best Elevator reaches the Demand Floor:", BestElevator.position );
-    return BestElevator.end;
+    return BestElevator.end;             // To Avoid Undefined Return At The End Of RequestElevator And RequestFloor Functions.
 }
+
 
 
 //--------------------------------------------------------------  TESTING PROGRAM ----------------------------------------------------------
