@@ -1,7 +1,9 @@
 
 
+// Week 2: The Mechanics of Interpreted Languages. 
 // JavaScript-File-Name: Residential_Controllers.js    Date: 26-06-2020.       Programed-By: Montasser EL Ferjani.
 // This Program Is Based On The Algorithm Of Residential_Controllers.algo.
+
 // To Run Scenarios Click On Run / Run Without Debugging / Node.js / Choose DEBUG CONSOLE (Below).
 // Note: Node.js Should Be Installed. 
 
@@ -64,7 +66,7 @@ var BestElevator = new Elevator;
 
 // Find The Best Elevator Function
 
-function FindBestElevator(CurrentFloor,Direction){
+function FindBestElevator(CurrentFloor, Direction){
 
     BestElevator = MyColumn.Elevator[0];
     var BestDistance = Math.abs(MyColumn.Elevator[0].position - CurrentFloor);
@@ -145,7 +147,7 @@ function CheckWeight(BestElevator){
     
     if (BestElevator.weight >= 1200) {
         console.log("Weight is exceeding the capacity of elevator");
-        status = "Out Of Service";
+        BestElevator.status = "Out Of Service";
         return null;
         
     }
