@@ -12,13 +12,14 @@
 
 class Elevator {                                                    //Constructor
 
-    constructor(id, position, status, weight,end) {
+    constructor(id, position, status, weight,end,door) {
 
         this.id       = id;
         this.position = position;
         this.status   = status;
         this.weight   = weight;
         this.end      = end;
+        this.door     = door;
     }
     Elev() {                                                          //Prototype
 
@@ -32,6 +33,7 @@ class Elevator {                                                    //Constructo
             }
         }
         this.end = "END";
+        this.door = ["OPEN","CLOSE"]
 
     }
 
@@ -86,6 +88,7 @@ for (var i=1; i<MyColumn.Elevator.length; i++  ){
         }
     }
 
+    
     if( CurrentFloor === 1 ){
             
         if((MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction != Direction ) || (MyColumn.Elevator[i].status === "Inactive") ){
@@ -105,9 +108,9 @@ for (var i=1; i<MyColumn.Elevator.length; i++  ){
 
    // Check Alarm Status:
    if(MyColumn.alarm === "Problem"){
-        BestElevator.status === "Out Of Service";
+        BestElevator.status = "Out Of Service";
         log.console("Elevator Is Out Of Service");
-        //return null;
+        return null;
     }
 
     // Move Best Elevator To Current Floor
@@ -120,7 +123,7 @@ for (var i=1; i<MyColumn.Elevator.length; i++  ){
         BestElevator.position --; 
     } 
 
-    BestElevator.Doors ===  "Opened";
+    BestElevator.Doors =  "OPEN";
     console.log("       STEP 1: The Best Elevator Moves To Current Floor: Floor nbr",BestElevator.position,".");
     
     return BestElevator.end;
@@ -131,6 +134,14 @@ for (var i=1; i<MyColumn.Elevator.length; i++  ){
 
 function RequestFloor (CurrentFloor,Destination){
 
+    // Check Weight
+    if (BestElevator.weight >= 1200) {
+        console.log("Weight is exceeding the capacity of elevator");
+        status = "Out Of Service";
+        return null;
+    }
+
+    BestElevator.Doors = "CLOSE";
 
     // Move Best Elevator to Destination
     while((Destination - CurrentFloor) > 0){
@@ -146,6 +157,7 @@ function RequestFloor (CurrentFloor,Destination){
         CurrentFloor --;
     }
 
+    BestElevator.Doors = "OPEN";
     console.log("       STEP 2: The Best Elevator reaches the Demand Floor:", BestElevator.position );
     return BestElevator.end;
 }
@@ -200,11 +212,6 @@ console.log(RequestFloor (CurrentFloor,Destination));
 
 var Scenario = "SCENARIO 2/B ( 2 min later )";
 
-//Elevator1 =  new Elevator(0,10, "Inactive", 900, "END" );
-//Elevator2 =  new Elevator(1,6, "Inactive", 900, "END" ); 
-
-//var MyColumn = new Column ([Elevator1,Elevator2],"NoProblem");
-
 var CurrentFloor = 3;
 var Direction = "UP";
 
@@ -218,11 +225,6 @@ console.log(RequestFloor (CurrentFloor,Destination));
 
 var Scenario = "SCENARIO 2/C";
 
-//Elevator1 =  new Elevator(0,10, "Inactive", 900, "END" );
-//Elevator2 =  new Elevator(1,5, "Inactive", 900, "END" ); 
-
-//var MyColumn = new Column ([Elevator1,Elevator2],"NoProblem");
-
 var CurrentFloor = 9;
 var Direction = "DOWN";
 
@@ -234,7 +236,7 @@ console.log(RequestFloor (CurrentFloor,Destination));
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
 // Scenario 3: With elevator-1 idle (Inactiv) at floor 10 and elevator-2 moving from floor 3 to floor 6, someone is on floor 3 and 
-// requests the 2nd floor. Elevator-1 should be sent. 
+// requests the 2nd floor. Elevator-2 should be sent. 
 // 5 minutes later, someone else is on the 10th floor and wants to go down to the 3rd floor. Elevator-2 should be sent.
 
 var Scenario = "SCENARIO 3/A";
@@ -257,8 +259,6 @@ console.log(RequestFloor (CurrentFloor,Destination));
 
 var Scenario = "SCENARIO 3/B ( 5 min later )";
 
-//Elevator1 =  new Elevator(0,10, "Inactive", 900, "END" );
-//Elevator2 =  new Elevator(1,2, "Active", 900, "END" ); 
 
 var CurrentFloor = 10;
 var Direction = "DOWN";
