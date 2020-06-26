@@ -10,11 +10,13 @@
 
 //  1st PART: Objects AND Arrays.
 
-// Constructor Function Of Elevator:
+// Elevator Class:
 
-class Elevator {                                                    //Constructor
+class Elevator {                                                    
 
-    constructor(id, position, status, weight,end,door) {
+    //Constructor
+    
+    constructor(id, position, status, weight,end,door) {      
 
         this.id       = id;
         this.position = position;

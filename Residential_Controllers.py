@@ -8,7 +8,7 @@
 
 
 
-# Constructor Function Of Elevator:
+# Class Function Of Elevator:
 
 class Elevator:    
     id = int  
@@ -18,8 +18,8 @@ class Elevator:
     end = str
    
     
-
-    def __init__(self, id, position, status, weight, end): 
+    # Constructor
+    def __init__(self, id, position, status, weight, end):  
 
         self.id       = id
         self.position = position
@@ -117,6 +117,7 @@ def FindBestElevator(CurrentFloor,Direction, MyColumn):
   
 
 
+# CORE FUNCTIONS ------------------------------------------------------------------------------------------------------------------------------
 
 #First Core Function
 def RequestElevator(CurrentFloor,Direction, MyColumn):
@@ -136,6 +137,7 @@ def RequestFloor (CurrentFloor,Destination, BestElevator, MyColumn):
     BestElevator.MoveToDestination(CurrentFloor,Destination)
     return BestElevator.end
 
+#----------------------------------------------------------------------------------------------------------------------------------------------
 
 #Main Program
 def main():
