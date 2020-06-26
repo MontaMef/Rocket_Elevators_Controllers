@@ -23,19 +23,57 @@ class Elevator {                                                    //Constructo
         this.end      = end;          // To Avoid Undefined Return At The End Of RequestElevator And RequestFloor Functions.
         this.door     = door;
     }
-    Elev() {                                                          //Prototype
 
-        this.id      = [1, 2];
-        this.postion = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11];
-        this.status  = ["Active", "Inactive", "On Service", "Out Of Service"];
-        this.weight  = function () {
-            if (weight >= 1200) {
-                console.log("Weight is exceeding the capacity of elevator");
-                status = "Out Of Service";
-            }
+    //Move Best Elevator To Current Floor
+
+    MoveToCurrenFloor(CurrentFloor){
+
+        while((CurrentFloor - BestElevator.position) > 0){
+            this.position ++;
+                
         }
-        this.end   = "END";
-        this.door  = ["OPEN","CLOSE"]
+
+        while((CurrentFloor - BestElevator.position) < 0){
+            this.position --; 
+        } 
+
+        this.Doors =  "OPEN";
+        console.log("       STEP 1: The Best Elevator Moves To Current Floor: Floor nbr",BestElevator.position,".");
+
+    }
+
+   // Check Elevator Weight
+
+    CheckWeight(){
+    
+        if (this.weight >= 1200) {
+            console.log("Weight is exceeding the capacity of elevator");
+            this.status = "Out Of Service";
+            return null;
+            
+        }
+        BestElevator.Doors = "CLOSE";
+    }
+
+    // Move Best Elevator to Destination
+
+    MoveToDestination(CurrentFloor,Destination){
+    
+        while((Destination - CurrentFloor) > 0){
+            
+            this.position ++; 
+            CurrentFloor ++;
+            
+        }
+
+        while((Destination - CurrentFloor) < 0){
+            
+            this.position --;  
+            CurrentFloor --;
+        }
+
+        this.Doors = "OPEN";
+        console.log("       STEP 2: The Best Elevator reaches the Demand Floor:", this.position );
 
     }
 
@@ -50,9 +88,16 @@ class Column {                          //Constructor
         this.alarm = alarm;
 
     }
-    BuilColumn() {                     //Prototype
-        this.Elevator = [Elevator, Elevator];
-        this.alarm = ["Problem", "NoProblem"];
+    
+    // Check Alarm Status
+
+    CheckAlarm (){
+   
+        if(this.alarm === "Problem"){
+            BestElevator.status = "Out Of Service";
+            log.console("Elevator Is Out Of Service");
+            return null;
+        }
     }
 }
 
@@ -107,89 +152,22 @@ function FindBestElevator(CurrentFloor, Direction){
     console.log("   The Best Elevator Is:",BestElevator.id + 1,".");
     console.log("   The Best Elevator Position: Floor",BestElevator.position);
     console.log("   The Best Distance Is:",BestDistance,"Level(s).");
+
+    return BestElevator
 }
 
-// Check Alarm Status
-
-function CheckAlarm (MyColumn){
-   
-    if(MyColumn.alarm === "Problem"){
-        BestElevator.status = "Out Of Service";
-        log.console("Elevator Is Out Of Service");
-        return null;
-    }
-}
-
-
-//Move Best Elevator To Current Floor
-
-function MoveToCurrenFloor(CurrentFloor,BestElevator){
-
-    while((CurrentFloor - BestElevator.position) > 0){
-        BestElevator.position ++;
-            
-    }
-
-    while((CurrentFloor - BestElevator.position) < 0){
-        BestElevator.position --; 
-    } 
-
-    BestElevator.Doors =  "OPEN";
-    console.log("       STEP 1: The Best Elevator Moves To Current Floor: Floor nbr",BestElevator.position,".");
-        
-    
-
-}
-
-// Check Elevator Weight
-
-function CheckWeight(BestElevator){
-    
-    if (BestElevator.weight >= 1200) {
-        console.log("Weight is exceeding the capacity of elevator");
-        BestElevator.status = "Out Of Service";
-        return null;
-        
-    }
-    BestElevator.Doors = "CLOSE";
-}
-
-
-//  // Move Best Elevator to Destination
-
-function MoveToDestination(CurrentFloor,Destination){
-    
-    while((Destination - CurrentFloor) > 0){
-        
-        BestElevator.position ++; 
-        CurrentFloor ++;
-        
-    }
-
-    while((Destination - CurrentFloor) < 0){
-        
-        BestElevator.position --;  
-        CurrentFloor --;
-    }
-
-    BestElevator.Doors = "OPEN";
-    console.log("       STEP 2: The Best Elevator reaches the Demand Floor:", BestElevator.position );
-    
-
-}
 
 //--------------------------------------------------------------- MAIN PROGRAM ------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------------------
-
 
 
 // Method 1: RequestElevator: Using: CurrentFloor And Direction.
  
 function RequestElevator(CurrentFloor,Direction) {
     
-    FindBestElevator(CurrentFloor,Direction)
-    CheckAlarm (MyColumn)
-    MoveToCurrenFloor(CurrentFloor,BestElevator)
+    BestElevator = FindBestElevator(CurrentFloor,Direction);
+    MyColumn.CheckAlarm();
+    BestElevator.MoveToCurrenFloor(CurrentFloor);
     return BestElevator.end;             // To Avoid Undefined Return At The End Of RequestElevator Functions.
 }
 
@@ -198,9 +176,9 @@ function RequestElevator(CurrentFloor,Direction) {
 
 function RequestFloor (CurrentFloor,Destination){
 
-    CheckWeight(BestElevator)
-    CheckAlarm (MyColumn)
-    MoveToDestination(CurrentFloor,Destination)
+    BestElevator.CheckWeight();
+    MyColumn.CheckAlarm();
+    BestElevator.MoveToDestination(CurrentFloor,Destination);
     return BestElevator.end;             // To Avoid Undefined Return At The End Of RequestFloor Functions.
 }
 

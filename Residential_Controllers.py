@@ -4,9 +4,9 @@
 # This Program Is Based On The Algorithm Of Residential_Controllers.algo.
 
 
-#1st PART: Objects AND Arrays.
 
-import array as arr
+
+
 
 # Constructor Function Of Elevator:
 
