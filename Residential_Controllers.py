@@ -15,6 +15,7 @@ class Elevator:
     postion = int                                            
     status = str
     weight = int
+    end    = str
 
     def __init__(self, id, position, status, weight,end): 
 
@@ -95,7 +96,7 @@ def RequestFloor (CurrentFloor,Destination):
         BestElevator.position -= 1 
         CurrentFloor -= 1
 
-    print("       STEP 2: The Best Elevator reaches the Demand Floor:", BestElevator.position )
+    print("       STEP 2: The Best Elevator reaches the Demand Floor::", BestElevator.position )
 
 
 def main():
