@@ -67,8 +67,8 @@ class Column:
     Elevator = [] 
     alarm = str
 
-    def __init__(self, Elevator, alarm):
-        self.Elevator = Elevator
+    def __init__(self, Elevators, alarm):
+        self.Elevators = Elevators
         self.alarm = alarm
 
     def CheckAlarm (self, BestElevator):
@@ -82,30 +82,30 @@ class Column:
 
 def FindBestElevator(CurrentFloor,Direction, MyColumn):
     
-    BestElevator = MyColumn.Elevator[0]
-    BestDistance = abs(MyColumn.Elevator[0].position - CurrentFloor)
+    BestElevator = MyColumn.Elevators[0]
+    BestDistance = abs(MyColumn.Elevators[0].position - CurrentFloor)
     
-    for i in range(1, len(MyColumn.Elevator)):
-        if(MyColumn.Elevator[i].status == "Active" and BestElevator.status == "Inactive"):
-            BestElevator = MyColumn.Elevator[i]
-            BestDistance = abs(MyColumn.Elevator[i].position - CurrentFloor)
+    for i in range(1, len(MyColumn.Elevators)):
+        if(MyColumn.Elevators[i].status == "Active" and BestElevator.status == "Inactive"):
+            BestElevator = MyColumn.Elevators[i]
+            BestDistance = abs(MyColumn.Elevators[i].position - CurrentFloor)
         
-        if((abs(MyColumn.Elevator[i].position - CurrentFloor)<BestDistance)):
-            if(MyColumn.Elevator[i].status == "Inactive" and  BestElevator.status == "Inactive"):
-                BestElevator = MyColumn.Elevator[i]
-                BestDistance = abs(MyColumn.Elevator[i].position - CurrentFloor)
+        if((abs(MyColumn.Elevators[i].position - CurrentFloor)<BestDistance)):
+            if(MyColumn.Elevators[i].status == "Inactive" and  BestElevator.status == "Inactive"):
+                BestElevator = MyColumn.Elevators[i]
+                BestDistance = abs(MyColumn.Elevators[i].position - CurrentFloor)
 
-            if((MyColumn.Elevator[i].status == "Active" and  BestElevator.status == "Active") and  (MyColumn.Elevator[i].position < CurrentFloor and Direction == "UP") or (MyColumn.Elevator[i].position > CurrentFloor and Direction == "DOWN")):
+            if((MyColumn.Elevators[i].status == "Active" and  BestElevator.status == "Active") and  (MyColumn.Elevators[i].position < CurrentFloor and Direction == "UP") or (MyColumn.Elevators[i].position > CurrentFloor and Direction == "DOWN")):
 
-                BestElevator = MyColumn.Elevator[i]
-                BestDistance = abs(MyColumn.Elevator[i].position - CurrentFloor)
+                BestElevator = MyColumn.Elevators[i]
+                BestDistance = abs(MyColumn.Elevators[i].position - CurrentFloor)
 
         if( CurrentFloor == 1 ):
                 
-            if((MyColumn.Elevator[i].status == "Active"  and MyColumn.Elevator[i].direction != Direction ) or (MyColumn.Elevator[i].status == "Inactive") ):
+            if((MyColumn.Elevators[i].status == "Active"  and MyColumn.Elevators[i].direction != Direction ) or (MyColumn.Elevators[i].status == "Inactive") ):
 
-                BestElevator = MyColumn.Elevator[i]
-                BestDistance = abs(MyColumn.Elevator[i].position - CurrentFloor)
+                BestElevator = MyColumn.Elevators[i]
+                BestDistance = abs(MyColumn.Elevators[i].position - CurrentFloor)
 
     print("")
     #print("RESULTS OF",Scenario,":")
@@ -152,7 +152,8 @@ def main():
     Elevator1 =  Elevator(0, 2, "Inactive", 900, "END" )
     Elevator2 =  Elevator(1,6, "Inactive", 900, "END" )
 
-    MyColumn = Column ([Elevator1,Elevator2],"NoProblem")
+    Elevators = [Elevator1,Elevator2]
+    MyColumn = Column (Elevators,"NoProblem")
     
 
     CurrentFloor = 3
@@ -177,7 +178,8 @@ def main():
     Elevator1 =  Elevator(0,10, "Inactive", 900, "END" )
     Elevator2 =  Elevator(1,3, "Inactive", 900, "END" )
 
-    MyColumn = Column ([Elevator1,Elevator2],"NoProblem")
+    Elevators = [Elevator1,Elevator2]
+    MyColumn = Column (Elevators,"NoProblem")
 
     CurrentFloor = 1
     Direction = "UP"
@@ -221,7 +223,8 @@ def main():
     Elevator1 =  Elevator(0,10, "Inactive", 900, "END" )
     Elevator2 =  Elevator(1,6, "Active", 900, "END" )
 
-    MyColumn =  Column ([Elevator1,Elevator2],"NoProblem")
+    Elevators = [Elevator1,Elevator2]
+    MyColumn = Column (Elevators,"NoProblem")
 
     CurrentFloor = 3
     Direction = "DOWN"
@@ -245,5 +248,5 @@ def main():
 
     print(RequestFloor(CurrentFloor,Destination, BestElevator, MyColumn))
 
-if __name__ == "__main__":
+if __name__ == "__main__":   #  Necessary To Execute The Program
     main()

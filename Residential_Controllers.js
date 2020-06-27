@@ -15,7 +15,7 @@
 class Elevator {                                                    
 
     //Constructor
-    
+
     constructor(id, position, status, weight,end,door) {      
 
         this.id       = id;
@@ -85,9 +85,12 @@ class Elevator {
 // Constructor Function Of Column:
 
 class Column {                          //Constructor
-    constructor(Elevator, alarm) {
-        this.Elevator = Elevator;
+    constructor(Elevators, alarm) {
+        
         this.alarm = alarm;
+        this.Elevators = Elevators;
+    
+
 
     }
     
@@ -115,36 +118,36 @@ var BestElevator = new Elevator;
 
 function FindBestElevator(CurrentFloor, Direction){
 
-    BestElevator = MyColumn.Elevator[0];
-    var BestDistance = Math.abs(MyColumn.Elevator[0].position - CurrentFloor);
-    for (var i=1; i<MyColumn.Elevator.length; i++  ){
+    BestElevator = MyColumn.Elevators[0];
+    var BestDistance = Math.abs(MyColumn.Elevators[0].position - CurrentFloor);
+    for (var i=1; i<MyColumn.Elevators.length; i++  ){
         
-        if(MyColumn.Elevator[i].status === "Active" && BestElevator.status === "Inactive"){
-            BestElevator = MyColumn.Elevator[i];
-            BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+        if(MyColumn.Elevators[i].status === "Active" && BestElevator.status === "Inactive"){
+            BestElevator = MyColumn.Elevators[i];
+            BestDistance = Math.abs(MyColumn.Elevators[i].position - CurrentFloor);
         }
         
-        else if((Math.abs(MyColumn.Elevator[i].position - CurrentFloor)<BestDistance)){
+        else if((Math.abs(MyColumn.Elevators[i].position - CurrentFloor)<BestDistance)){
             
-            if(MyColumn.Elevator[i].status === "Inactive"  &&  BestElevator.status === "Inactive") {
-                BestElevator = MyColumn.Elevator[i];
-                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+            if(MyColumn.Elevators[i].status === "Inactive"  &&  BestElevator.status === "Inactive") {
+                BestElevator = MyColumn.Elevators[i];
+                BestDistance = Math.abs(MyColumn.Elevators[i].position - CurrentFloor);
                 
             }
-            if((MyColumn.Elevator[i].status === "Active"  &&  BestElevator.status === "Active")  &&  (MyColumn.Elevator[i].position < CurrentFloor && Direction === "UP") || (MyColumn.Elevator[i].position > CurrentFloor && Direction === "DOWN")){
+            if((MyColumn.Elevators[i].status === "Active"  &&  BestElevator.status === "Active")  &&  (MyColumn.Elevators[i].position < CurrentFloor && Direction === "UP") || (MyColumn.Elevators[i].position > CurrentFloor && Direction === "DOWN")){
 
-                BestElevator = MyColumn.Elevator[i];
-                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                BestElevator = MyColumn.Elevators[i];
+                BestDistance = Math.abs(MyColumn.Elevators[i].position - CurrentFloor);
             }
         }
 
         
         if( CurrentFloor === 1 ){
                 
-            if((MyColumn.Elevator[i].status === "Active"  && MyColumn.Elevator[i].direction != Direction ) || (MyColumn.Elevator[i].status === "Inactive") ){
+            if((MyColumn.Elevators[i].status === "Active"  && MyColumn.Elevators[i].direction != Direction ) || (MyColumn.Elevators[i].status === "Inactive") ){
 
-                BestElevator = MyColumn.Elevator[i];
-                BestDistance = Math.abs(MyColumn.Elevator[i].position - CurrentFloor);
+                BestElevator = MyColumn.Elevators[i];
+                BestDistance = Math.abs(MyColumn.Elevators[i].position - CurrentFloor);
             }
         }  
     }
@@ -159,7 +162,7 @@ function FindBestElevator(CurrentFloor, Direction){
 }
 
 
-//--------------------------------------------------------------- MAIN PROGRAM ------------------------------------------------------------
+//--------------------------------------------------------------- MAIN METHODS ------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -194,10 +197,12 @@ function RequestFloor (CurrentFloor,Destination){
 
 var Scenario = "SCENARIO 1";
 
+
 var Elevator1 =  new Elevator(0,2, "Inactive", 900, "END" );
 var Elevator2 =  new Elevator(1,6, "Inactive", 900, "END" ); 
 
-var MyColumn = new Column ([Elevator1,Elevator2],"NoProblem");
+Elevators = [Elevator1,Elevator2];
+var MyColumn = new Column (Elevators,"NoProblem");
 
 
 var CurrentFloor = 3;
@@ -218,9 +223,11 @@ console.log(RequestFloor (CurrentFloor,Destination));
 var Scenario = "SCENARIO 2/A";
 
 Elevator1 =  new Elevator(0,10, "Inactive", 900, "END" );
-Elevator2 =  new Elevator(1,3, "Inactive", 900, "END" ); 
+Elevator2 =  new Elevator(1,3, "Inactive", 900, "END" );
 
-var MyColumn = new Column ([Elevator1,Elevator2],"NoProblem");
+Elevators = [Elevator1,Elevator2];
+
+var MyColumn = new Column (Elevators, "NoProblem");
 
 var CurrentFloor = 1;
 var Direction = "UP";
@@ -267,7 +274,8 @@ var Scenario = "SCENARIO 3/A";
 Elevator1 =  new Elevator(0,10, "Inactive", 900, "END" );
 Elevator2 =  new Elevator(1,6, "Active", 900, "END" ); 
 
-MyColumn = new Column ([Elevator1,Elevator2],"NoProblem");
+Elevators = [Elevator1,Elevator2];
+var MyColumn = new Column (Elevators,"NoProblem");
 
 var CurrentFloor = 3;
 var Direction = "DOWN";
