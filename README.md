@@ -16,7 +16,7 @@
 // It Contains:
 1-Objects And Arrays:
 2-Functions:
-3-Main Program:
+3-Main Methods:
 4-Scenarios:
 
 
@@ -26,7 +26,8 @@
 // It Contains:
 1-Objects And Arrays:
 2-Functions:
-3-Main ():
-4-Scenarios:
+3-Core Functions
+4-Main ():
+5-Scenarios:
 
 
