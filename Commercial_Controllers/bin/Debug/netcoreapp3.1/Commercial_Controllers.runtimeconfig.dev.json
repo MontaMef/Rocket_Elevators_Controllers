@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\monta\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\monta\\.nuget\\packages"
+    ]
+  }
+}
