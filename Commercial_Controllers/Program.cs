@@ -6,7 +6,7 @@
 
 
 using System;
-using generics = System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Commercial_Controllers
 {   
@@ -16,22 +16,25 @@ namespace Commercial_Controllers
         public int id;
         public int position;
         public string status;
+        public int direction;
         public int weight;
         public string door;
+        
 
 
         // Constructor Function
-        public Elevator (int id, int position, string status, int weight, string door){   
+        public Elevator (int id, int position, string status, int direction,int weight, string door){   
 
             this.id = id;
             this.position= position;
             this.status = status;
+            this.direction = direction;
             this.weight = weight;
             this.door = door;
         }
 
          // Move Best Elevator To First Floor
-        public void MoveElevatorToFirstFloor(int FirstFloor){
+        public void MoveElevatorToFirstFloor(){
 
             while( this.position  >1){
 
@@ -44,7 +47,7 @@ namespace Commercial_Controllers
             } 
 
             this.door = "OPEN";
-            Console.WriteLine("       STEP 1: The Best Elevator Moves To First Floor.");
+            Console.WriteLine("The Best Elevator Moves To First Floor.");
         }
 
         
@@ -60,7 +63,7 @@ namespace Commercial_Controllers
                 this.position -- ;  
             }
             this.door = "OPEN";
-            Console.WriteLine("       STEP 2: The Best Elevator reaches the Request Floor: Floor Nbr", this.position );
+            Console.WriteLine($"The Best Elevator reaches the Request Floor: Floor Nbr {this.position}" );
         }
        
         // Move Elevator To Current Floor ( Go Back To First Floor)
@@ -75,17 +78,19 @@ namespace Commercial_Controllers
                 this.position -- ;     
             }
             this.door = "OPEN";
-            Console.WriteLine("       STEP 2: The Best Elevator reaches the Current Floor:", this.position );
+            Console.WriteLine($"The Best Elevator reaches the Current Floor: {this.position}");
         }
 
 
         // Check Elevator Weight (Should be less than 2000 kg)
-        public void CheckWeight(int weight){
+        public void CheckWeight(){
             if (this.weight >= 2000) {
-                Console.Writeline("Weight is exceeding the capacity of elevator");
+                Console.WriteLine("Weight is exceeding the capacity of elevator");
                 this.status = "Out Of Service";
             }
-            this.door = "CLOSE";
+            else {
+                this.door = "CLOSE";
+            }
         }
     }
 
@@ -99,56 +104,66 @@ namespace Commercial_Controllers
         public int NbrColumn;
         public int NbrFloor;
         public int NbrBasements;
-        public list < Column > columns;
+        public List<Column> column;
+        public int NbrFLoorsPerColumn;
 
         //Constructor
-        public Battery (int NbrColumn, int NbrFloor, int NbrBasements, int NbrColumn){
+        public Battery (int NbrColumn, int NbrFloor, int NbrBasements){
 
             this.NbrColumn    = NbrColumn;
             this.NbrFloor     = NbrFloor;
             this.NbrBasements = NbrBasements;
             this.NbrFLoorsPerColumn = (NbrFloor - NbrBasements)/(NbrColumn - 1);
-            this.column     = List<Column>();
-        }
+            this.column = new List<Column>();
+            for (int i = 0 ; i < this.NbrColumn  ; i++ ) {
+                this.column.Add (new Column(5,"OK"));
+            }
+        }    
 
         // Find Best Column: When User Chooses the Request Floor From The Outside Panel In First Floor. Controller Searches The Best column
-        public Column FindBestColumn(int Destination){
+        public int FindBestColumn(int Destination){
 
-           if(Destination < 0){
-                return this.column[0];         // To Find The Best column For Floors < 0.
-           }
-           else{
-                int IdColumn = Math.Round(Destination/this.NbrFLoorsPerColumn);  // To Find The Best column For Floors > 0.
-                return this.column[IdColumn];
-                
-           } 
-           Console.WriteLine("The Best Column Is Column:",this.column);
+            if(Destination < 0){
+                Console.WriteLine("The Best Column Is Column:0");
+                return 0;         // To Find The Best column For Floors < 0.
+            }
+            else{
+                Decimal a = Destination/this.NbrFLoorsPerColumn;
+                int IdColumn = Convert.ToInt32(Math.Round(a));  // To Find The Best column For Floors > 0.
+                Console.WriteLine($"The Best Column Is Column: {IdColumn + 1}"); // Add Always +1 Because Index Starts From 0.
+                return IdColumn;
+                        
+            } 
+            
         }
     }
-
-
+    
 
 
     // Column Object
     public class Column {
         
         //Paramters
-        public list < Elevator > elevators;
+        public List < Elevator > elevator;
         public int NbrElevator;
         public string alarm;
 
         //Constructor
-        public Column(int NbOfElevator, string alarm){
+        public Column(int NbrElevator, string alarm){
             
-            this.elevators    = new list<elevator>();
             this.NbrElevator = NbrElevator;
             this.alarm        = alarm;
+            this.elevator = new List <Elevator>(); 
+            for (int i = 0 ; i < NbrElevator ; i++ ) {
+                Elevator elev = new Elevator(i,1,"Inactive",0,0,"Closed");
+                this.elevator.Add(elev);
+            }
         }
 
-        public void CheckAlarm(string alarm){
+        public void CheckAlarm(){
             
-            if(this.alarm = "Problem"){
-                this.status = "Out Of Service";
+            if(this.alarm == "Problem"){
+                
                 Console.WriteLine("Elevator Is Out Of Service");
             }
         }
@@ -157,39 +172,32 @@ namespace Commercial_Controllers
         // Find The Best Elevator In THe Best Column.
         public Elevator FindBestElevator(int CurrentFloor){
 
-            BestElevator = this.Elevators[0];
-            var BestDistance = Math.abs(this.Elevators[0].position - CurrentFloor);
-            for (var i=1; i < this.Elevators.length; i++  ){
+            Elevator BestElevator = this.elevator[0];
+            Decimal a =Math.Abs(this.elevator[0].position - CurrentFloor);
+            int BestDistance = Convert.ToInt32(a);
+            for (var i=1; i < this.elevator.Count; i++  ){
         
-                if(this.Elevators[i].status == "Active" && BestElevator.status == "Inactive"){
-                    BestElevator = this.Elevators[i];
-                    BestDistance = Math.abs(this.Elevators[i].position - CurrentFloor);
+                if(this.elevator[i].status == "Active" && BestElevator.status == "Inactive"){
+                    BestElevator = this.elevator[i];
+                    BestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
                 }
                 
-                else if((Math.abs(this.Elevators[i].position - CurrentFloor)<BestDistance)){
+                else if((Math.Abs(this.elevator[i].position - CurrentFloor)<BestDistance)){
                     
-                    if(this.Elevators[i].status == "Inactive"  &&  BestElevator.status == "Inactive") {
-                        BestElevator = this.Elevators[i];
-                        BestDistance = Math.abs(this.Elevators[i].position - CurrentFloor);
+                    if(this.elevator[i].status == "Inactive"  &&  BestElevator.status == "Inactive") {
+                        BestElevator = this.elevator[i];
+                        BestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
                         
                     }
-                    if((this.Elevators[i].status == "Active"  &&  BestElevator.status =="Active")  &&  (this.Elevators[i].position < CurrentFloor && Direction == "UP") || (this.Elevators[i].position > CurrentFloor && Direction == "DOWN")){
+                    if(this.elevator[i].status == "Active"  &&  BestElevator.status =="Active" &&  (this.elevator[i].position < CurrentFloor && this.elevator[i].direction - this.elevator[i].position > 0) || (this.elevator[i].position > CurrentFloor && this.elevator[i].direction - this.elevator[i].position < 0)){
 
-                        BestElevator = this.Elevators[i];
-                        BestDistance = Math.abs(this.Elevators[i].position - CurrentFloor);
+                        BestElevator = this.elevator[i];
+                        BestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
                     }
                 }
-
-                if( CurrentFloor ==1 ){
-                        
-                    if((this.Elevators[i].status == "Active"  && this.Elevators[i].direction != Direction ) || (this.Elevators[i].status == "Inactive") ){
-
-                        BestElevator = this.Elevators[i];
-                        BestDistance = Math.abs(this.Elevators[i].position - CurrentFloor);
-                    }
-                }  
             }
-            Console.WriteLine("The Best Elevator is Elevator Nbr:", BestElevator);
+            Console.WriteLine($"The Best Elevator is Elevator Nbr: {BestElevator.id}");
+            return BestElevator;
         }
     }
 
@@ -202,26 +210,48 @@ namespace Commercial_Controllers
         // Main Methods ---------------------------------------------------------------------------------------------------------------------
 
         // Method 1: Request Elevator. This method represents an elevator request ( From First Floor RC) on a floor or basement.  
-        public Elevator RequestElevator(int FloorNumber){
-
-            var BestColumn   = Battery.FindBestColumn();
-            var BestElevator = BestColumn.FindBestElevator();
-            BestColumn.CheckAlarm();
+        public void RequestElevator(int CurrentFloor, int Destination,Battery Battery ,int IdBestColumn){
+           // Battery Battery = new Battery();
+            Elevator BestElevator = Battery.column[IdBestColumn].FindBestElevator(CurrentFloor);
+            Battery.column[IdBestColumn].CheckAlarm();
             BestElevator.MoveElevatorToFirstFloor();
             BestElevator.CheckWeight();
-            BestElevator.MoveElevatorToDestination();
-            return BestElevator;        // To Avoid erreur Method should return 
+            BestElevator.MoveElevatorToDestination(Destination);
+            //return BestElevator;        // To Avoid erreur Method should return 
         }  
 
         // Method 2: Assign Elevator. This method will be used for the requests made on the first floor.  
-        public Elevator AssignElevator( int Destination, int BestColumn){
-            var BestColumn   = Battery.FindBestColumn();
-            var BestElevator = BestColumn.FindBestElevator();
-            BestColumn.CheckAlarm();
-            BestElevator.MoveElevatorCurrenttFloor();
-            BestElevator.CheckWeight();
-            BestElevator.MoveElevatorToFirstFloor();
-            return BestElevator;     // To Avoid erreur Method should return
+        public void AssignElevator( int CurrentFloor){
+            //int BestColumn   = Battery.FindBestColumn(1);
+           // Elevator BestElevator = BestColumn.FindBestElevator(CurrentFloor);
+           // BestColumn.CheckAlarm();
+           // BestElevator.MoveElevatorToCurrentFloor(CurrentFloor);
+           // BestElevator.CheckWeight();
+           // BestElevator.MoveElevatorToFirstFloor();
+            //return BestElevator;     // To Avoid erreur Method should return
+        }
+
+        // Scenarios Functions ---------------------------------------------------------------------------------------------------------------
+
+        public void Scenario1(){
+            
+            Console.WriteLine("Scenario 1:");
+           
+            Battery Battery  = new Battery(4,66,6);
+            int CurrentFloor = 1;
+            int Destination  = 20;
+            int IdBestColumn = Battery.FindBestColumn(Destination);
+            Battery.column[IdBestColumn] = new Column(5,"OK");
+
+            Battery.column[IdBestColumn].elevator[0] = new Elevator(1,20,"Active",5,1000,"Closed");
+            Battery.column[IdBestColumn].elevator[1] = new Elevator(2,3,"Active",15,1000,"Closed");
+            Battery.column[IdBestColumn].elevator[2] = new Elevator(3,13,"Active",1,1000,"Closed");
+            Battery.column[IdBestColumn].elevator[3] = new Elevator(4,15,"Active",2,1000,"Closed");
+            Battery.column[IdBestColumn].elevator[4] = new Elevator(5,6,"Active",1,1000,"Closed");
+
+            
+            RequestElevator(CurrentFloor,Destination,Battery,IdBestColumn);
+
         }
         
 
@@ -232,6 +262,9 @@ namespace Commercial_Controllers
             // With second column (or column B) serving floors from 2 to 20, with elevator B1 at 20th floor going to 5th,
             // B2 at 3rd floor going to 15th, B3 at 13th floor going to 1st, B4 at 15th floor going to 2nd, and B5 at 6th floor going to 1st,
             // someone is at 1st floor and requests the 20th floor, elevator B5 is expected to be sent 
+            Program SC = new Program();
+            
+            SC.Scenario1 ();
 
             
 
@@ -255,7 +288,7 @@ namespace Commercial_Controllers
             // A3 at B3 and going to B5, A4 at B6 and going to 1st floor, and A5 at B1 going to B6, someone is at B3 and requests the 1st floor.
             // Elevator A4 is expected to be sent. 
  
-            Console.WriteLine("Hello World!");
+            
         }
     }
 }
