@@ -47,7 +47,7 @@ namespace Commercial_Controllers
             } 
 
             this.door = "OPEN";
-            Console.WriteLine("The Best Elevator Moves To First Floor.");
+            Console.WriteLine($"    The Best Elevator Moves To First Floor.(Best Elevator New Position {this.position})");
         }
 
         
@@ -63,7 +63,7 @@ namespace Commercial_Controllers
                 this.position -- ;  
             }
             this.door = "OPEN";
-            Console.WriteLine($"The Best Elevator reaches the Request Floor: Floor Nbr {this.position}" );
+            Console.WriteLine($"    The Best Elevator reaches the Request Floor: Floor Nbr {this.position}" );
         }
        
         // Move Elevator To Current Floor ( Go Back To First Floor)
@@ -78,14 +78,14 @@ namespace Commercial_Controllers
                 this.position -- ;     
             }
             this.door = "OPEN";
-            Console.WriteLine($"The Best Elevator reaches the Current Floor: {this.position}");
+            Console.WriteLine($"    The Best Elevator reaches the Current Floor: {this.position}");
         }
 
 
         // Check Elevator Weight (Should be less than 2000 kg)
         public void CheckWeight(){
             if (this.weight >= 2000) {
-                Console.WriteLine("Weight is exceeding the capacity of elevator");
+                Console.WriteLine(" Weight is exceeding the capacity of elevator");
                 this.status = "Out Of Service";
             }
             else {
@@ -124,13 +124,13 @@ namespace Commercial_Controllers
         public int FindBestColumn(int Destination){
 
             if(Destination < 0){
-                Console.WriteLine("The Best Column Is Column:0");
+                Console.WriteLine("     The Best Column Is Column:1");
                 return 0;         // To Find The Best column For Floors < 0.
             }
             else{
                 Decimal a = Destination/this.NbrFLoorsPerColumn;
-                int IdColumn = Convert.ToInt32(Math.Round(a));  // To Find The Best column For Floors > 0.
-                Console.WriteLine($"The Best Column Is Column: {IdColumn + 1}"); // Add Always +1 Because Index Starts From 0.
+                int IdColumn = Convert.ToInt32(Math.Round(a));                   // To Find The Best column For Floors > 0.
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}"); // Add Always +1 Because Index Starts From 0.
                 return IdColumn;
                         
             } 
@@ -196,7 +196,8 @@ namespace Commercial_Controllers
                     }
                 }
             }
-            Console.WriteLine($"The Best Elevator is Elevator Nbr: {BestElevator.id}");
+            Console.WriteLine($"    The Best Elevator Is Elevator Nbr: {BestElevator.id}");
+            Console.WriteLine($"    The Best Elevator Position: Floor Nbr {BestElevator.position}");
             return BestElevator;
         }
     }
@@ -234,8 +235,10 @@ namespace Commercial_Controllers
         // Scenarios Functions ---------------------------------------------------------------------------------------------------------------
 
         public void Scenario1(){
-            
+
+            Console.WriteLine("");
             Console.WriteLine("Scenario 1:");
+            Console.WriteLine("");
            
             Battery Battery  = new Battery(4,66,6);
             int CurrentFloor = 1;
@@ -251,6 +254,7 @@ namespace Commercial_Controllers
 
             
             RequestElevator(CurrentFloor,Destination,Battery,IdBestColumn);
+            Console.WriteLine("");
 
         }
         
