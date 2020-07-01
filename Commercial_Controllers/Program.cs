@@ -308,7 +308,6 @@ namespace Commercial_Controllers
            
             Battery Battery  = new Battery(4,66,6);
             int CurrentFloor = 54;
-            int Destination  = 1;
             int IdBestColumn = Battery.FindBestColumnReturn(CurrentFloor);
             Battery.column[IdBestColumn] = new Column(5,"OK");
 
@@ -333,7 +332,6 @@ namespace Commercial_Controllers
            
             Battery Battery  = new Battery(4,66,6);
             int CurrentFloor = -3;
-            int Destination  = 1;
             int IdBestColumn = Battery.FindBestColumnReturn(CurrentFloor);
             Battery.column[IdBestColumn] = new Column(5,"OK");
 
