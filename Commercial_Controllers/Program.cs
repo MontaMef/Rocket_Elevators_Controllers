@@ -150,39 +150,61 @@ namespace Commercial_Controllers
                 Console.WriteLine("    The Best Column Is Column: 1");
                 return this.column[0];         // To Find The Best column For Floors < 0.
             }
-            else{
-                float x = Destination/this.NbrFLoorsPerColumn;
-                int IdColumn = Convert.ToInt32(Math.Ceiling(x));  // To Find The Best column For Floors > 0.
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                
+            else if (Destination > 0 && Destination < 21){
+                int IdColumn = 1;
                 Column bestColumn = this.column[IdColumn];
-
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
                 return bestColumn;        
             } 
-            
+
+            else if (Destination > 20 && Destination < 41){
+                int IdColumn = 2;
+                Column bestColumn = this.column[IdColumn];
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
+                return bestColumn;        
+            } 
+
+            else{
+                int IdColumn = 3;
+                Column bestColumn = this.column[IdColumn];
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
+                return bestColumn; 
+            }
+ 
         }
 
         public Column FindBestColumnReturn(int CurrentFloor){
 
-            if( CurrentFloor< 0){
+            if( CurrentFloor < 0){
                 Console.WriteLine("    The Best Column Is Column: 1");
                 return this.column[0];         // To Find The Best column For Floors < 0.
             }
-            else{
-                
-                int IdColumn = Convert.ToInt32(decimal.Ceiling(CurrentFloor/this.NbrFLoorsPerColumn));  // To Find The Best column For Floors > 0.
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                
+
+            else if (CurrentFloor > 0 && CurrentFloor < 21){
+                int IdColumn = 1;
                 Column bestColumn = this.column[IdColumn];
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
                 return bestColumn;        
             } 
-            
-        }
 
+            else if (CurrentFloor > 20 && CurrentFloor < 41){
+                int IdColumn = 2;
+                Column bestColumn = this.column[IdColumn];
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
+                return bestColumn;        
+            } 
+
+            else{
+                int IdColumn = 3;
+                Column bestColumn = this.column[IdColumn];
+                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
+                return bestColumn; 
+            }
+
+        }
 
     }
     
-
 
     // Column Object
     public class Column {
@@ -281,7 +303,7 @@ namespace Commercial_Controllers
             Console.WriteLine("Scenario 2:");
             Console.WriteLine("");
 
-            int Destination  = 36;
+            int Destination  = 40;
             
             battery2.column[2].elevator[0] = new Elevator(1,1,"Active",21,1000,"Closed");
             battery2.column[2].elevator[1] = new Elevator(2,23,"Active",28,1000,"Closed");
