@@ -151,24 +151,21 @@ namespace Commercial_Controllers
                 return this.column[0];         // To Find The Best column For Floors < 0.
             }
             else if (Destination > 0 && Destination < 21){
-                int IdColumn = 1;
-                Column bestColumn = this.column[IdColumn];
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                return bestColumn;        
+                
+                Console.WriteLine($"    The Best Column Is Column:2");  // Add Always +1 Because Index Starts From 0.
+                return this.column[1];        
             } 
 
             else if (Destination > 20 && Destination < 41){
-                int IdColumn = 2;
-                Column bestColumn = this.column[IdColumn];
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                return bestColumn;        
+                
+                Console.WriteLine($"    The Best Column Is Column:3");  // Add Always +1 Because Index Starts From 0.
+                return this.column[2];        
             } 
 
             else{
-                int IdColumn = 3;
-                Column bestColumn = this.column[IdColumn];
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                return bestColumn; 
+                
+                Console.WriteLine($"    The Best Column Is Column:4");  // Add Always +1 Because Index Starts From 0.
+                return this.column[3]; 
             }
  
         }
@@ -181,24 +178,21 @@ namespace Commercial_Controllers
             }
 
             else if (CurrentFloor > 0 && CurrentFloor < 21){
-                int IdColumn = 1;
-                Column bestColumn = this.column[IdColumn];
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                return bestColumn;        
+               
+                Console.WriteLine($"    The Best Column Is Column: 2");  // Add Always +1 Because Index Starts From 0.
+                return this.column[1];        
             } 
 
             else if (CurrentFloor > 20 && CurrentFloor < 41){
-                int IdColumn = 2;
-                Column bestColumn = this.column[IdColumn];
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                return bestColumn;        
+                
+                Console.WriteLine($"    The Best Column Is Column: 3");  // Add Always +1 Because Index Starts From 0.
+                return this.column[2];        
             } 
 
             else{
-                int IdColumn = 3;
-                Column bestColumn = this.column[IdColumn];
-                Console.WriteLine($"    The Best Column Is Column: {IdColumn + 1}");  // Add Always +1 Because Index Starts From 0.
-                return bestColumn; 
+                
+                Console.WriteLine($"    The Best Column Is Column: 4");  // Add Always +1 Because Index Starts From 0.
+                return this.column[3]; 
             }
 
         }
