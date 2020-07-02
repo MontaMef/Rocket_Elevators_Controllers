@@ -148,23 +148,23 @@ namespace Commercial_Controllers
 
             if(Destination < 0){
                 Console.WriteLine("    The Best Column Is Column: 1");
-                return this.column[0];         // To Find The Best column For Floors < 0.
+                return this.column[0];         
             }
             else if (Destination > 0 && Destination < 21){
                 
-                Console.WriteLine($"    The Best Column Is Column:2");  // Add Always +1 Because Index Starts From 0.
+                Console.WriteLine($"    The Best Column Is Column:2");  
                 return this.column[1];        
             } 
 
             else if (Destination > 20 && Destination < 41){
                 
-                Console.WriteLine($"    The Best Column Is Column:3");  // Add Always +1 Because Index Starts From 0.
+                Console.WriteLine($"    The Best Column Is Column:3");  
                 return this.column[2];        
             } 
 
             else{
                 
-                Console.WriteLine($"    The Best Column Is Column:4");  // Add Always +1 Because Index Starts From 0.
+                Console.WriteLine($"    The Best Column Is Column:4");  
                 return this.column[3]; 
             }
  
@@ -174,24 +174,24 @@ namespace Commercial_Controllers
 
             if( CurrentFloor < 0){
                 Console.WriteLine("    The Best Column Is Column: 1");
-                return this.column[0];         // To Find The Best column For Floors < 0.
+                return this.column[0];         
             }
 
             else if (CurrentFloor > 0 && CurrentFloor < 21){
                
-                Console.WriteLine($"    The Best Column Is Column: 2");  // Add Always +1 Because Index Starts From 0.
+                Console.WriteLine($"    The Best Column Is Column: 2");  
                 return this.column[1];        
             } 
 
             else if (CurrentFloor > 20 && CurrentFloor < 41){
                 
-                Console.WriteLine($"    The Best Column Is Column: 3");  // Add Always +1 Because Index Starts From 0.
+                Console.WriteLine($"    The Best Column Is Column: 3");  
                 return this.column[2];        
             } 
 
             else{
                 
-                Console.WriteLine($"    The Best Column Is Column: 4");  // Add Always +1 Because Index Starts From 0.
+                Console.WriteLine($"    The Best Column Is Column: 4");  
                 return this.column[3]; 
             }
 
