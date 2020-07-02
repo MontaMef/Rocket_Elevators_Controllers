@@ -133,7 +133,7 @@ namespace Commercial_Controllers
             
         }  
 
-        // Method 2: Assign Elevator. This method will be used for the requests made on the first floor.  
+        // Method 2: Assign Elevator. This method will be used for the requests made on the first floor (RC).  
         public void AssignElevator( int CurrentFloor){
             Column bestColumn   = this.FindBestColumnReturn(CurrentFloor);
             Elevator bestElevator = bestColumn.FindBestElevator(CurrentFloor);
