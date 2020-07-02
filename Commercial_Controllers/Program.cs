@@ -36,7 +36,7 @@ namespace Commercial_Controllers
          // Move Best Elevator To First Floor
         public void MoveElevatorToFirstFloor(){
 
-            while( this.position  >1){
+            while( this.position  > 1){
 
                 this.position --; 
             }
@@ -175,7 +175,7 @@ namespace Commercial_Controllers
                 
                 Column bestColumn = this.column[IdColumn];
                 return bestColumn;        
-            } // To Review !!!!!!!!!!!!!!!!!
+            } 
             
         }
 
@@ -217,8 +217,8 @@ namespace Commercial_Controllers
         public Elevator FindBestElevator(int CurrentFloor){
 
             Elevator bestElevator = this.elevator[0];
-            Decimal a =Math.Abs(this.elevator[0].position - CurrentFloor);
-            int bestDistance = Convert.ToInt32(a);
+            int a = Math.Abs(this.elevator[0].position - CurrentFloor);
+            int bestDistance = a;
             for (var i=1; i < this.elevator.Count; i++  ){
         
                 if(this.elevator[i].status == "Active" && bestElevator.status == "Inactive"){
@@ -256,7 +256,7 @@ namespace Commercial_Controllers
 
         // Scenarios Functions ---------------------------------------------------------------------------------------------------------------
         //Scenario 1:
-        public void Scenario1(Battery battery){
+        public void Scenario1(Battery battery1){
 
             Console.WriteLine("");
             Console.WriteLine("Scenario 1:");
@@ -264,18 +264,18 @@ namespace Commercial_Controllers
 
             int Destination  = 20;
             
-            battery.column[1].elevator[0] = new Elevator(1,20,"Active",5,1000,"Closed");
-            battery.column[1].elevator[1] = new Elevator(2,3,"Active",15,1000,"Closed");
-            battery.column[1].elevator[2] = new Elevator(3,13,"Active",1,1000,"Closed");
-            battery.column[1].elevator[3] = new Elevator(4,15,"Active",2,1000,"Closed");
-            battery.column[1].elevator[4] = new Elevator(5,6,"Active",1,1000,"Closed");
+            battery1.column[1].elevator[0] = new Elevator(1,20,"Active",5,1000,"Closed");
+            battery1.column[1].elevator[1] = new Elevator(2,3,"Active",15,1000,"Closed");
+            battery1.column[1].elevator[2] = new Elevator(3,13,"Active",1,1000,"Closed");
+            battery1.column[1].elevator[3] = new Elevator(4,15,"Active",2,1000,"Closed");
+            battery1.column[1].elevator[4] = new Elevator(5,6,"Active",1,1000,"Closed");
 
-            battery.RequestElevator(Destination);
+            battery1.RequestElevator(Destination);
             Console.WriteLine("");
         }
         
         // Scenario 2:
-        public void Scenario2(Battery battery){
+        public void Scenario2(Battery battery2){
 
             Console.WriteLine("");
             Console.WriteLine("Scenario 2:");
@@ -283,18 +283,18 @@ namespace Commercial_Controllers
 
             int Destination  = 36;
             
-            battery.column[2].elevator[0] = new Elevator(1,1,"Active",21,1000,"Closed");
-            battery.column[2].elevator[1] = new Elevator(2,23,"Active",28,1000,"Closed");
-            battery.column[2].elevator[2] = new Elevator(3,33,"Active",1,1000,"Closed");
-            battery.column[2].elevator[3] = new Elevator(4,40,"Active",24,1000,"Closed");
-            battery.column[2].elevator[4] = new Elevator(5,39,"Active",1,1000,"Closed");
+            battery2.column[2].elevator[0] = new Elevator(1,1,"Active",21,1000,"Closed");
+            battery2.column[2].elevator[1] = new Elevator(2,23,"Active",28,1000,"Closed");
+            battery2.column[2].elevator[2] = new Elevator(3,33,"Active",1,1000,"Closed");
+            battery2.column[2].elevator[3] = new Elevator(4,40,"Active",24,1000,"Closed");
+            battery2.column[2].elevator[4] = new Elevator(5,39,"Active",1,1000,"Closed"); 
 
-            battery.RequestElevator(Destination);
+            battery2.RequestElevator(Destination);
             Console.WriteLine("");
         }
 
         // Scenario 3:
-        public void Scenario3(Battery battery){
+        public void Scenario3(Battery battery3){
 
             Console.WriteLine("");
             Console.WriteLine("Scenario 3:");
@@ -302,19 +302,19 @@ namespace Commercial_Controllers
 
             int CurrentFloor  = 54;
             
-            battery.column[3].elevator[0] = new Elevator(1,58,"Active",1,1000,"Closed");
-            battery.column[3].elevator[1] = new Elevator(2,50,"Active",60,1000,"Closed"); 
-            battery.column[3].elevator[2] = new Elevator(3,46,"Active",58,1000,"Closed");
-            battery.column[3].elevator[3] = new Elevator(4,40,"Active",24,1000,"Closed");
-            battery.column[3].elevator[4] = new Elevator(5,60,"Active",1,1000,"Closed");
+            battery3.column[3].elevator[0] = new Elevator(1,58,"Active",1,1000,"Closed");
+            battery3.column[3].elevator[1] = new Elevator(2,50,"Active",60,1000,"Closed"); 
+            battery3.column[3].elevator[2] = new Elevator(3,46,"Active",58,1000,"Closed");
+            battery3.column[3].elevator[3] = new Elevator(4,40,"Active",24,1000,"Closed");
+            battery3.column[3].elevator[4] = new Elevator(5,60,"Active",1,1000,"Closed");
+   
 
-            battery.AssignElevator(CurrentFloor);
+            battery3.AssignElevator(CurrentFloor);
             Console.WriteLine("");
         }
 
         // Scenario 4:
-
-        public void Scenario4(Battery battery){
+        public void Scenario4(Battery battery4){
 
             Console.WriteLine("");
             Console.WriteLine("Scenario 4:");
@@ -322,32 +322,30 @@ namespace Commercial_Controllers
 
             int CurrentFloor  = -3;
             
-            battery.column[0].elevator[0] = new Elevator(1,-4,"Inactive",-4,1000,"Closed");
-            battery.column[0].elevator[1] = new Elevator(2,1,"Inactive",1,1000,"Closed");
-            battery.column[0].elevator[2] = new Elevator(3,-3,"Active",-5,1000,"Closed");
-            battery.column[0].elevator[3] = new Elevator(4,-6,"Active",1,1000,"Closed");
-            battery.column[0].elevator[4] = new Elevator(5,-1,"Active",-6,1000,"Closed");
+            battery4.column[0].elevator[0] = new Elevator(1,-4,"Inactive",-4,1000,"Closed");
+            battery4.column[0].elevator[1] = new Elevator(2,1,"Inactive",1,1000,"Closed");
+            battery4.column[0].elevator[2] = new Elevator(3,-3,"Active",-5,1000,"Closed");
+            battery4.column[0].elevator[3] = new Elevator(4,-6,"Active",1,1000,"Closed");
+            battery4.column[0].elevator[4] = new Elevator(5,-1,"Active",-6,1000,"Closed");    
 
-            battery.AssignElevator(CurrentFloor);
+            battery4.AssignElevator(CurrentFloor);
             Console.WriteLine("");
         }
 
 
-        
-
         // Testing Scenarios -----------------------------------------------------------------------------------------------------------------
         static void Main(string[] args)
         {
+            Program SC = new Program();
+
             // Scenario 1:
             // With second column (or column B) serving floors from 2 to 20, with elevator B1 at 20th floor going to 5th,
             // B2 at 3rd floor going to 15th, B3 at 13th floor going to 1st, B4 at 15th floor going to 2nd, and B5 at 6th floor going to 1st,
             // someone is at 1st floor and requests the 20th floor, elevator B5 is expected to be sent 
             
-            Program SC = new Program();
-
-            Battery battery1 = new Battery(4,66,6);
-              
+            Battery battery1 = new Battery(4,66,6);  
             SC.Scenario1(battery1);
+
 
             // Scenario 2: 
             // With third column (or column C) serving floors from 21 to 40, with elevator C1 at 1st floor going to 21th, 
@@ -357,6 +355,7 @@ namespace Commercial_Controllers
             Battery battery2 = new Battery(4,66,6);
             SC.Scenario2(battery2);
 
+
             // Scenario 3: 
             // With fourth column (or column D) serving floors from 41 to 60, with elevator D1 at 58th floor going to 1st, 
             // D2 at 50th floor going to 60th, D3 at 46th floor going to 58th, D4 at 1st floor going to 54th, and D5 at 60th floor going to 1st, 
@@ -364,6 +363,7 @@ namespace Commercial_Controllers
             
             Battery battery3 = new Battery(4,66,6);
             SC.Scenario3(battery3);
+
 
             // Scenario 4: 
             // With first column (or Column A) serving the basements B1 to B6, with elevator A1 idle at B4, A2 idle at 1st floor,
