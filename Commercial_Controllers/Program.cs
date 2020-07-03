@@ -392,7 +392,7 @@ namespace Commercial_Controllers
             SC.Scenario3(battery3);
 
 
-            // Scenario 4: 
+            // Scenario 4:/
             // With first column (or Column A) serving the basements B1 to B6, with elevator A1 idle at B4, A2 idle at 1st floor,
             // A3 at B3 and going to B5, A4 at B6 and going to 1st floor, and A5 at B1 going to B6, 
             //someone is at B3 and requests the 1st floor. Elevator A4 is expected to be sent. 
