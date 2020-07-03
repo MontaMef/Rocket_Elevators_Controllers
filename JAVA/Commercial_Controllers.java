@@ -3,7 +3,7 @@
 
 public class Commercial_Controllers {
 
-    // Elevator Object
+    //Elevator Object
     public class Elevator {
         // Parameters
         public int id;
@@ -15,7 +15,7 @@ public class Commercial_Controllers {
         
 
 
-        // Constructor Function
+        //Constructor Function
         public Elevator (int id, int position, String status, int direction,int weight, String door){   
 
             this.id = id;
@@ -26,7 +26,7 @@ public class Commercial_Controllers {
             this.door = door;
         }
 
-         // Move Best Elevator To First Floor
+         //Move Best Elevator To First Floor
         public void MoveElevatorToFirstFloor(){
 
             while( this.position  > 1){
@@ -43,7 +43,7 @@ public class Commercial_Controllers {
         }
 
         
-        // Move Elevator From First Floor To Destination (Request Floor)
+        //Move Elevator From First Floor To Destination (Request Floor)
         public void MoveElevatorToDestination(int Destination){
             while((Destination - this.position) > 0){
             
@@ -58,7 +58,7 @@ public class Commercial_Controllers {
             System.out.println("    The Best Elevator reaches the Request Floor: Floor Nbr:"+this.position );
         }
        
-        // Move Elevator To Current Floor ( Go Back To First Floor)
+        //Move Elevator To Current Floor ( Go Back To First Floor)
         public void MoveElevatorToCurrentFloor(int CurrentFloor){
              while((CurrentFloor - this.position) > 0){
             
@@ -74,7 +74,7 @@ public class Commercial_Controllers {
         }
 
 
-        // Check Elevator Weight (Should be less than 2000 kg)
+        //Check Elevator Weight (Should be less than 2000 kg)
         public void CheckWeight(){
             if (this.weight >= 2000) {
                 System.out.println(" Weight is exceeding the capacity of elevator");
@@ -87,7 +87,7 @@ public class Commercial_Controllers {
     }
 
 
-    // Column Object
+    //Column Object
     public class Column {
         
         //Paramters
@@ -118,7 +118,7 @@ public class Commercial_Controllers {
         }
 
         
-        // Find The Best Elevator In THe Best Column.
+        //Find The Best Elevator In THe Best Column.
         public Elevator FindBestElevator(int CurrentFloor, int Destination){
 
             Elevator bestElevator = this.elevator[0];
@@ -164,7 +164,7 @@ public class Commercial_Controllers {
 
 
 
-    // Battery Object
+    //Battery Object
     public class Battery {
 
         //Parameters
@@ -187,7 +187,7 @@ public class Commercial_Controllers {
             }
         }    
 
-        // Main Methods ---------------------------------------------------------------------------------------------------------------------
+        //Main Methods ---------------------------------------------------------------------------------------------------------------------
 
         // Method 1: Request Elevator. This method represents an elevator request ( From First Floor RC) on a floor or basement.  
         public void RequestElevator(int Destination){
@@ -200,7 +200,7 @@ public class Commercial_Controllers {
             
         }
 
-        // Method 2: Assign Elevator. This method will be used for the requests made on the first floor (RC).  
+        //Method 2: Assign Elevator. This method will be used for the requests made on the first floor (RC).  
         public void AssignElevator( int CurrentFloor){
             Column bestColumn   = this.FindBestColumnReturn(CurrentFloor);
             Elevator bestElevator = bestColumn.FindBestElevator(CurrentFloor,1);
@@ -210,7 +210,7 @@ public class Commercial_Controllers {
             bestElevator.MoveElevatorToFirstFloor();
         }
 
-        // Find Best Column: When User Chooses the Request Floor From The Outside Panel In First Floor. Controller Searches The Best column
+        //Find Best Column: When User Chooses the Request Floor From The Outside Panel In First Floor. Controller Searches The Best column
         public Column FindBestColumn(int Destination){
 
             if(Destination < 0){
@@ -236,7 +236,7 @@ public class Commercial_Controllers {
             }
  
         }
-        // Find Best Coulmn To Return To The First Floor
+        //Find Best Coulmn To Return To The First Floor
         public Column FindBestColumnReturn(int CurrentFloor){
 
             if( CurrentFloor < 0){
@@ -270,9 +270,9 @@ public class Commercial_Controllers {
 
     }
 
-// Scenarios Functions ---------------------------------------------------------------------------------------------------------------
-        //Scenario 1:
-        public void Scenario1(Battery battery1){
+    // Scenarios Functions ---------------------------------------------------------------------------------------------------------------
+    //Scenario 1:
+    public void Scenario1(Battery battery1){
 
             System.out.println("");
             System.out.println("Scenario 1:");
@@ -288,10 +288,10 @@ public class Commercial_Controllers {
 
             battery1.RequestElevator(Destination);
             System.out.println("");
-        }
+    }
         
-        // Scenario 2:
-        public void Scenario2(Battery battery2){
+    // Scenario 2:
+    public void Scenario2(Battery battery2){
 
             System.out.println("");
             System.out.println("Scenario 2:");
@@ -307,10 +307,10 @@ public class Commercial_Controllers {
 
             battery2.RequestElevator(Destination);
             System.out.println("");
-        }
+    }
 
-        // Scenario 3:
-        public void Scenario3(Battery battery3){
+    // Scenario 3:
+    public void Scenario3(Battery battery3){
 
             System.out.println("");
             System.out.println("Scenario 3:");
@@ -327,10 +327,10 @@ public class Commercial_Controllers {
 
             battery3.AssignElevator(CurrentFloor);
             System.out.println("");
-        }
+    }
 
-        // Scenario 4:
-        public void Scenario4(Battery battery4){
+    // Scenario 4:
+    public void Scenario4(Battery battery4){
 
             System.out.println("");
             System.out.println("Scenario 4:");
@@ -346,7 +346,7 @@ public class Commercial_Controllers {
 
             battery4.AssignElevator(CurrentFloor);
             System.out.println("");
-        }
+    }
 
 
     public static void main(String[] args) {
