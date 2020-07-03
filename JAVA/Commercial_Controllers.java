@@ -1,4 +1,5 @@
-import java.util.*;
+
+
 
 public class Commercial_Controllers {
 
@@ -90,8 +91,10 @@ public class Commercial_Controllers {
     public class Column {
         
         //Paramters
-        public List < Elevator > elevator;
+        //public List < Elevator > elevator;
+        //public Array <Elevator> elevator;
         public int NbrElevator;
+        public Elevator elevator[];
         public String alarm;
 
         //Constructor
@@ -99,10 +102,10 @@ public class Commercial_Controllers {
             
             this.NbrElevator = NbrElevator;
             this.alarm        = alarm;
-            this.elevator = new ArrayList <Elevator>(); 
+            this.elevator =  new Elevator[NbrElevator]; 
             for (int i = 0 ; i < NbrElevator ; i++ ) {
                 Elevator elev = new Elevator(i,1,"Inactive",0,0,"Closed");
-                this.elevator.list.add(elev);
+                this.elevator[i] = elev;
             }
         }
 
@@ -119,34 +122,34 @@ public class Commercial_Controllers {
         public Elevator FindBestElevator(int CurrentFloor, int Destination){
 
             Elevator bestElevator = this.elevator[0];
-            int a = Math.Abs(this.elevator[0].position - CurrentFloor);
+            int a = Math.abs(this.elevator[0].position - CurrentFloor);
             int bestDistance = a;
-            for (var i=1; i < this.elevator.Count; i++  ){
+            for (var i=1; i < this.elevator.length; i++  ){
         
                 if(this.elevator[i].status == "Active" && bestElevator.status == "Inactive"){
                     bestElevator = this.elevator[i];
-                    bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
+                    bestDistance = Math.abs(this.elevator[i].position - CurrentFloor);
                 }
                 
                 else if(this.elevator[i].status == "Active"  &&  bestElevator.status =="Active"){
                         
-                    if((Destination > CurrentFloor) && (this.elevator[i].direction > this.elevator[i].position) && (this.elevator[i].position < CurrentFloor)) {
+                    if((Destination > CurrentFloor) && (this.elevator[i].direction > this.elevator[i].position) && (this.elevator[i].position < CurrentFloor) && (Math.abs(this.elevator[i].position - CurrentFloor) < bestDistance) ) {
 
                         
                         bestElevator = this.elevator[i];
-                        bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
+                        bestDistance = Math.abs(this.elevator[i].position - CurrentFloor);
                     }
-                    else if ((Destination < CurrentFloor) && (this.elevator[i].direction < this.elevator[i].position) && (this.elevator[i].position > CurrentFloor)) {
+                    else if ((Destination < CurrentFloor) && (this.elevator[i].direction < this.elevator[i].position) && (this.elevator[i].position > CurrentFloor) && (Math.abs(this.elevator[i].position - CurrentFloor) < bestDistance)) {
 
                         bestElevator = this.elevator[i];
-                        bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
+                        bestDistance = Math.abs(this.elevator[i].position - CurrentFloor);
                     }
                 }   
                 
-                else if((this.elevator[i].status == "Inactive"  &&  bestElevator.status == "Inactive") && (Math.Abs(this.elevator[i].position - CurrentFloor) < bestDistance)) {
+                else if((this.elevator[i].status == "Inactive"  &&  bestElevator.status == "Inactive") && (Math.abs(this.elevator[i].position - CurrentFloor) < bestDistance)) {
                     
                     bestElevator = this.elevator[i];
-                    bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
+                    bestDistance = Math.abs(this.elevator[i].position - CurrentFloor);
                         
                 }
                     
@@ -168,7 +171,7 @@ public class Commercial_Controllers {
         public int NbrColumn;
         public int NbrFloor;
         public int NbrBasements;
-        public ArrayList<Column>list;
+        public Column column[];
         public int NbrFLoorsPerColumn;
 
         //Constructor
@@ -178,9 +181,9 @@ public class Commercial_Controllers {
             this.NbrFloor     = NbrFloor;
             this.NbrBasements = NbrBasements;
             this.NbrFLoorsPerColumn = (NbrFloor - NbrBasements)/(NbrColumn - 1);
-            this.column = new ArrayList<Column>();
+            this.column = new Column[NbrColumn];
             for (int i = 0 ; i < this.NbrColumn  ; i++ ) {
-                this.column.list.add (5,"OK");
+                this.column[i] = new Column(5,"OK");
             }
         }    
 
@@ -263,7 +266,11 @@ public class Commercial_Controllers {
 
 
 
-        // Scenarios Functions ---------------------------------------------------------------------------------------------------------------
+        
+
+    }
+
+// Scenarios Functions ---------------------------------------------------------------------------------------------------------------
         //Scenario 1:
         public void Scenario1(Battery battery1){
 
@@ -341,8 +348,6 @@ public class Commercial_Controllers {
             System.out.println("");
         }
 
-    }
-
 
     public static void main(String[] args) {
 
@@ -352,9 +357,9 @@ public class Commercial_Controllers {
         // Scenario 1:
         // With second column (or column B) serving floors from 2 to 20, with elevator B1 at 20th floor going to 5th,
         // B2 at 3rd floor going to 15th, B3 at 13th floor going to 1st, B4 at 15th floor going to 2nd, and B5 at 6th floor going to 1st,
-         // someone is at 1st floor and requests the 20th floor, elevator B5 is expected to be sent 
-            
-        Battery battery1 = new Battery(4,66,6);  
+        // someone is at 1st floor and requests the 20th floor, elevator B5 is expected to be sent 
+           
+        Battery battery1 = SC.new Battery(4,66,6);  
         SC.Scenario1(battery1);
 
 
@@ -363,7 +368,7 @@ public class Commercial_Controllers {
         // C2 at 23st floor going to 28th, C3 at 33rd floor going to 1st, C4 at 40th floor going to 24th, and C5 at 39nd floor going to 1st,
         // someone is at 1st floor and requests the 36th floor, elevator C1 is expected to be sent 
             
-        Battery battery2 = new Battery(4,66,6);
+        Battery battery2 = SC.new Battery(4,66,6);
         SC.Scenario2(battery2);
 
 
@@ -372,7 +377,7 @@ public class Commercial_Controllers {
         // D2 at 50th floor going to 60th, D3 at 46th floor going to 58th, D4 at 1st floor going to 54th, and D5 at 60th floor going to 1st, 
         // someone is at 54th floor and requests the 1st floor, elevator D1 is expected to pick him up 
             
-        Battery battery3 = new Battery(4,66,6);
+        Battery battery3 = SC.new Battery(4,66,6);
         SC.Scenario3(battery3);
 
 
@@ -381,10 +386,9 @@ public class Commercial_Controllers {
         // A3 at B3 and going to B5, A4 at B6 and going to 1st floor, and A5 at B1 going to B6, 
         //someone is at B3 and requests the 1st floor. Elevator A4 is expected to be sent. 
             
-        Battery battery4 = new Battery(4,66,6);
+        Battery battery4 = SC.new Battery(4,66,6);
         SC.Scenario4(battery4);
             
-        System.out.println("Hello World");
         
     }
     
