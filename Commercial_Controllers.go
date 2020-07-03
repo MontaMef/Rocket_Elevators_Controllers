@@ -279,7 +279,7 @@ func (m Column) FindBestElevator(CurrentFloor int, Destination int) Elevator {
 	return bestElevator
 }
 
-//Scenario1 test
+//Scenario1 Function
 func Scenario1(battery1 Battery) {
 
 	fmt.Println("")
@@ -298,7 +298,7 @@ func Scenario1(battery1 Battery) {
 	fmt.Println("")
 }
 
-//Scenario2 test
+//Scenario2 Function
 func Scenario2(battery2 Battery) {
 
 	fmt.Println("")
@@ -317,7 +317,7 @@ func Scenario2(battery2 Battery) {
 	fmt.Println("")
 }
 
-//Scenario3 function
+//Scenario3 Function
 func Scenario3(battery3 Battery) {
 
 	fmt.Println("")
@@ -336,7 +336,7 @@ func Scenario3(battery3 Battery) {
 	fmt.Println("")
 }
 
-//Scenario4 function
+//Scenario4 Function
 func Scenario4(battery4 Battery) {
 
 	fmt.Println("")
