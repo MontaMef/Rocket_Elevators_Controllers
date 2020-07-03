@@ -125,7 +125,7 @@ namespace Commercial_Controllers
         // Method 1: Request Elevator. This method represents an elevator request ( From First Floor RC) on a floor or basement.  
         public void RequestElevator(int Destination){
             Column bestColumn = this.FindBestColumn(Destination);
-            Elevator bestElevator = bestColumn.FindBestElevator(1);
+            Elevator bestElevator = bestColumn.FindBestElevator(1,Destination);
             bestColumn.CheckAlarm();
             bestElevator.MoveElevatorToFirstFloor();
             bestElevator.CheckWeight();
@@ -136,7 +136,7 @@ namespace Commercial_Controllers
         // Method 2: Assign Elevator. This method will be used for the requests made on the first floor (RC).  
         public void AssignElevator( int CurrentFloor){
             Column bestColumn   = this.FindBestColumnReturn(CurrentFloor);
-            Elevator bestElevator = bestColumn.FindBestElevator(CurrentFloor);
+            Elevator bestElevator = bestColumn.FindBestElevator(CurrentFloor,1);
             bestColumn.CheckAlarm();
             bestElevator.MoveElevatorToCurrentFloor(CurrentFloor);
             bestElevator.CheckWeight();
@@ -169,7 +169,7 @@ namespace Commercial_Controllers
             }
  
         }
-
+        // Find Best Coulmn To Return To The First Floor
         public Column FindBestColumnReturn(int CurrentFloor){
 
             if( CurrentFloor < 0){
@@ -230,7 +230,7 @@ namespace Commercial_Controllers
 
         
         // Find The Best Elevator In THe Best Column.
-        public Elevator FindBestElevator(int CurrentFloor){
+        public Elevator FindBestElevator(int CurrentFloor, int Destination){
 
             Elevator bestElevator = this.elevator[0];
             int a = Math.Abs(this.elevator[0].position - CurrentFloor);
@@ -242,19 +242,30 @@ namespace Commercial_Controllers
                     bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
                 }
                 
-                else if((Math.Abs(this.elevator[i].position - CurrentFloor)<bestDistance)){
-                    
-                    if(this.elevator[i].status == "Inactive"  &&  bestElevator.status == "Inactive") {
+                else if(this.elevator[i].status == "Active"  &&  bestElevator.status =="Active"){
+                        
+                    if((Destination > CurrentFloor) && (this.elevator[i].direction > this.elevator[i].position) && (this.elevator[i].position < CurrentFloor)) {
+
+                        
                         bestElevator = this.elevator[i];
                         bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
-                        
                     }
-                    if(this.elevator[i].status == "Active"  &&  bestElevator.status =="Active" &&  (this.elevator[i].position < CurrentFloor && this.elevator[i].direction - this.elevator[i].position > 0)|| (this.elevator[i].position > CurrentFloor && this.elevator[i].direction - this.elevator[i].position < 0)){
+                    else if ((Destination < CurrentFloor) && (this.elevator[i].direction < this.elevator[i].position) && (this.elevator[i].position > CurrentFloor)) {
 
                         bestElevator = this.elevator[i];
                         bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
                     }
+                }   
+                
+                else if((this.elevator[i].status == "Inactive"  &&  bestElevator.status == "Inactive") && (Math.Abs(this.elevator[i].position - CurrentFloor) < bestDistance)) {
+                    
+                    bestElevator = this.elevator[i];
+                    bestDistance = Math.Abs(this.elevator[i].position - CurrentFloor);
+                        
                 }
+                    
+                   
+                
             }
             Console.WriteLine($"    The Best Elevator Is Elevator Nbr: {bestElevator.id}");
             Console.WriteLine($"    The Best Elevator Position: Floor Nbr {bestElevator.position}");
